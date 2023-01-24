@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "A Lit Framework component for making 2D graphs",
   "main": "lit-graph.js",
+  "module": "my-element.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
