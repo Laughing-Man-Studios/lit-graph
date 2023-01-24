@@ -1,0 +1,24 @@
+{
+  "name": "lit-graph",
+  "version": "1.0.0",
+  "description": "A Lit Framework component for making 2D graphs",
+  "main": "lit-graph.js",
+  "scripts": {
+    "test": "npm run test:dev && npm run test:prod"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Laughing-Man-Studios/lit-graph.git"
+  },
+  "keywords": [
+    "Lit",
+    "Graph",
+    "2D"
+  ],
+  "author": "Robert Gibb",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Laughing-Man-Studios/lit-graph/issues"
+  },
+  "homepage": "https://github.com/Laughing-Man-Studios/lit-graph#readme"
+}
