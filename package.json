@@ -1,6 +1,6 @@
 {
   "name": "lit-graph",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A Lit Framework component for making 2D graphs",
   "main": "lit-graph.js",
   "module": "my-element.js",
