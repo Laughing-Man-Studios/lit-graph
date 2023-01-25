@@ -4,9 +4,11 @@
     "@semantic-release/release-notes-generator",
     "@semantic-release/github",
     "@semantic-release/changelog",
-    "@semantic-release/git",
+    ["@semantic-release/git", {
+        "assets": "dist/**/*"
+    }],
     ["@semantic-release/npm", {
-        "pkgRoot": "./dist"
+        "pkgRoot": "dist"
     }]
   ]
 }

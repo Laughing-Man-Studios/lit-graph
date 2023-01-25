@@ -18,7 +18,15 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-
+      - name: Use Node.js 16.17.0
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.17.0'
+          cache: npm
+      - name: Install Dependencies  
+        run: npm ci
+      - name: Build Package 
+        run: npm run build:package
       - name: Semantic Release
         id: semantic-release
         uses: cycjimmy/semantic-release-action@v3
