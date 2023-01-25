@@ -6,7 +6,7 @@ name: Release
 on: 
   push:
     branches: 
-      - Rogibb/issue2
+      - Rogibb111/issue2
       
 jobs:
   release:
