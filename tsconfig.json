@@ -29,5 +29,5 @@
       ]
     },
     "include": ["src/**/*.ts"],
-    "exclude": []
+    "exclude": ["./dist/**/*", "src/test/**/*"]
   }
