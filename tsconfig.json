@@ -21,6 +21,7 @@
       "experimentalDecorators": true,
       "forceConsistentCasingInFileNames": true,
       "noImplicitOverride": true,
+      "typeRoots": ["node_modules/@types"],
       "plugins": [
         {
           "name": "ts-lit-plugin",
