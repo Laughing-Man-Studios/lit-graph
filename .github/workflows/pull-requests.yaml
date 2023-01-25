@@ -13,10 +13,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 16.17.0
         uses: actions/setup-node@v3
         with:
           node-version: '16.17.0'
           cache: npm
-      - run: npm ci
-      - run: npm run test
+      - name: Install Dependencies  
+        run: npm ci
+      - name: Install playwright browsers
+        run: npx playwright install --with-deps
+      - name: Run test suite
+        run: npm run test
