@@ -1,5 +1,5 @@
 {
-  "name": "lit-graph",
+  "name": "@laughing-man-studios/lit-graph",
   "version": "0.0.1",
   "description": "A Lit Framework component for making 2D graphs",
   "main": "lit-graph.js",
@@ -72,6 +72,6 @@
     "typescript": "~4.7.4"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://npm.pkg.github.com/laughing-man-studios/lit-graph"
   }
 }
