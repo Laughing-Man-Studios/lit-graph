@@ -52,7 +52,7 @@ jobs:
             @semantic-release/git@10.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       - name: Print Results
         if: steps.semantic-release.outputs.new_release_published == 'true'
         run: |
