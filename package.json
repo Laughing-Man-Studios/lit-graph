@@ -32,7 +32,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Laughing-Man-Studios/lit-graph.git"
+    "url": "https://github.com/Laughing-Man-Studios/lit-graph.git"
   },
   "keywords": [
     "Lit",
@@ -72,6 +72,6 @@
     "typescript": "~4.7.4"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/laughing-man-studios/lit-graph"
+    "registry": "https://npm.pkg.github.com/"
   }
 }
