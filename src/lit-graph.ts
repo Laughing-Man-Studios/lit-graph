@@ -1,62 +1,57 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 
+type Data = [
+  { x: String | Number | Date, y: String | Number | Date }
+];
+
 /**
- * An example element.
+ * Lit Graph Component.
  *
- * @fires count-changed - Indicates when the count changes
- * @slot - This element has a slot
+ * @data - The data that needs to be graphed. Can take in strings, numbers, or dates
+ * @x-label - Main label for the X axis
+ * @y-label - Main label for the Y axis
  * @csspart button - The button
  */
-@customElement('my-element')
-export class MyElement extends LitElement {
+@customElement('lit-graph')
+export class LitGraph extends LitElement {
   static override styles = css`
     :host {
-      display: block;
-      border: solid 1px gray;
-      padding: 16px;
-      max-width: 800px;
+      height: 100%;
+      width: 100%;
     }
   `;
 
   /**
-   * The name to say "Hello" to.
+   * The data to graph.
    */
-  @property()
-  name = 'World';
+  @property({ type: Array })
+  data: Data = [{ x: 1, y: 1 }];
 
   /**
-   * The number of times the button has been clicked.
+   * The Y axis label
    */
-  @property({type: Number})
-  count = 0;
+  @property({ attribute: 'y-label'})
+  yLabel = 'Y Axis Label';
+
+  /**
+   * The X axis label
+   */
+  @property({ attribute: 'x-label'})
+  xLabel = 'x Axis Label';
 
   override render() {
     return html`
-      <h1>${this.sayHello(this.name)}!</h1>
-      <button @click=${this._onClick} part="button">
-        Click Count: ${this.count}
-      </button>
-      <slot></slot>
+      <svg>
+        <rect width="100%" height="100%" fill="red" />
+        <circle cx="150" cy="100" r="80" fill="green" />
+      </svg>
     `;
-  }
-
-  private _onClick() {
-    this.count++;
-    this.dispatchEvent(new CustomEvent('count-changed'));
-  }
-
-  /**
-   * Formats a greeting
-   * @param name The name to say "Hello" to
-   */
-  sayHello(name: string): string {
-    return `Hello, ${name}`;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'my-element': MyElement;
+    'lit-graph': LitGraph;
   }
 }
