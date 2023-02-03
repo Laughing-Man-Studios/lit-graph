@@ -1,4 +1,4 @@
-import {MyElement} from '../lit-graph';
+import LitGraph from '../lit-graph';
 
 import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
@@ -6,7 +6,7 @@ import {html} from 'lit/static-html.js';
 suite('my-element', () => {
   test('is defined', () => {
     const el = document.createElement('my-element');
-    assert.instanceOf(el, MyElement);
+    assert.instanceOf(el, LitGraph);
   });
 
   test('renders with default values', async () => {
@@ -34,22 +34,21 @@ suite('my-element', () => {
   });
 
   test('handles a click', async () => {
-    const el = (await fixture(html`<my-element></my-element>`)) as MyElement;
+    const el = (await fixture(html`<my-element></my-element>`)) as LitGraph;
     const button = el.shadowRoot!.querySelector('button')!;
     button.click();
     await el.updateComplete;
     assert.shadowDom.equal(
       el,
       `
-      <h1>Hello, World!</h1>
-      <button part="button">Click Count: 1</button>
-      <slot></slot>
+      <svg>
+        <lit-grid 
     `
     );
   });
 
   test('styling applied', async () => {
-    const el = (await fixture(html`<my-element></my-element>`)) as MyElement;
+    const el = (await fixture(html`<my-element></my-element>`)) as LitGraph;
     await el.updateComplete;
     assert.equal(getComputedStyle(el).paddingTop, '16px');
   });
