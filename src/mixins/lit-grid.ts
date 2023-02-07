@@ -14,7 +14,7 @@ export const LitGridMixin = <T extends Constructor<LitElement>>(superClass: T) =
         private renderXAxisLines(xAxisSetLength: number) {
             const lineElements = [];
             const interval = 100 / xAxisSetLength;
-            for (let i = 1; i < 10; i += 1) {
+            for (let i = 1; i < xAxisSetLength; i += 1) {
                 const xCoord = interval * i;
                 lineElements.push(svg`
                     <line x1=${xCoord} x2=${xCoord} y1="0" y2="100" 
@@ -28,7 +28,7 @@ export const LitGridMixin = <T extends Constructor<LitElement>>(superClass: T) =
         private renderYAxisLines(yAxisSetLength: number) {
             const lineElements = [];
             const interval = 100 / yAxisSetLength;
-            for (let i = 1; i < 10; i += 1) {
+            for (let i = 1; i < yAxisSetLength; i += 1) {
                 const yCoord = interval * i;
                 lineElements.push(svg`
                     <line x1="0" x2="100" y1=${yCoord} y2=${yCoord} 
