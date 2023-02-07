@@ -18,6 +18,7 @@
     "serve:prod": "cross-env MODE=prod npm run serve",
     "test": "npm run test:build && npm run test:dev && npm run test:prod",
     "test:build": "tsc --build tsconfig.test.json",
+    "test:build:watch": "tsc --project tsconfig.test.json --watch",
     "test:dev": "wtr",
     "test:watch": "wtr --watch",
     "test:prod": "cross-env MODE=prod wtr",
