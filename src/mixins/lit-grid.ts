@@ -1,11 +1,11 @@
 import { LitElement, svg } from 'lit';
-import { AxisLengths } from '../types';
+import { Axis } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T = {}> = new (...args: any[]) => T;
 
 export declare class LitGridInterface {
-    renderGrid(axisLengths?: AxisLengths): unknown;
+    renderGrid(axisLengths?: Axis<number>): unknown;
 }
 
 export const LitGridMixin = <T extends Constructor<LitElement>>(superClass: T) => {
@@ -39,7 +39,7 @@ export const LitGridMixin = <T extends Constructor<LitElement>>(superClass: T) =
             return lineElements;
         }
 
-        renderGrid(axisLengths: AxisLengths = { x: 10, y: 10 }) {
+        renderGrid(axisLengths: Axis<number> = { x: 10, y: 10 }) {
             const { x, y } = axisLengths;
             return svg`
                 ${this.renderXAxisLines(x)}
