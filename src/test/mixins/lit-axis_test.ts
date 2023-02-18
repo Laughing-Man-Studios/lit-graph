@@ -1,6 +1,7 @@
 import { assert, fixture } from '@open-wc/testing';
 import { html, LitElement } from 'lit';
 import { LitAxisMixin } from '../../mixins/lit-axis';
+import * as Expected from './lit-axis_test.expect';
 
 class TestEl extends LitAxisMixin(LitElement) {
     override render () {
@@ -14,7 +15,11 @@ class TestEl extends LitAxisMixin(LitElement) {
         `
     }
 }
-customElements.define('test-el', TestEl)
+customElements.define('test-el', TestEl);
+
+function stripHtmlComments(content) {
+    return content.replace(/<!--(?!>)[\S\s]*?-->/g, '');
+}
 
 suite('lit-axis mixin', ()=> {
     test('is defined', () => {
@@ -23,14 +28,13 @@ suite('lit-axis mixin', ()=> {
         assert.exists((el as TestEl).renderAxis);
     });
 
-    test('renders with default values', async () => {
+    test('renders with default values (numbers)', async () => {
         const el = await fixture(html`<test-el></test-el>`);
-        assert.shadowDom.equal(
-            el,
-            `<svg>
-                <line x1="0" y1="0" x2="100" y2="0" stoke-width="0.5" stroke="black">
-                <line x1="0" y1="0" x2="0" y2="100" stoke-width="0.5" stroke="black">
-            </svg>`
-        )
+        const innerHtml = stripHtmlComments(el.shadowRoot?.innerHTML);
+        if (innerHtml) {
+            assert.equal(innerHtml, Expected.defaults, 'Expected render with no arguments to return default values');
+        } else {
+            assert.fail('Component shadowroot did not contain any inner HTML');
+        }
     });
 });
