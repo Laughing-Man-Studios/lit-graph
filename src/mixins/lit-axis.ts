@@ -11,19 +11,20 @@ export declare class LitAxisInterface {
 
 const CONSTANTS = {
     MEASUREMENT_OFFSET: -1,
-    SPACING_OFFSET: 5
+    SPACING_OFFSET: 5,
+    FONT_SIZE: 6
 };
 
 const defaults = {
-    x: { begin: 0, end: 10, interval: 1, type: 'number' },
-    y: { begin: 0, end: 10, interval: 1, type: 'number'}
+    x: { begin: 0, end: 9, interval: 1, type: 'number' },
+    y: { begin: 0, end: 9, interval: 1, type: 'number'}
 } as Axis<AxisData>;
 
 export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) => {
     class LitAxisClass extends superClass {
         private renderXAxis(xData: AxisData) {
             const { X_START, X_END, Y_END } = GRAPH;
-            const { MEASUREMENT_OFFSET, SPACING_OFFSET } = CONSTANTS;
+            const { MEASUREMENT_OFFSET, SPACING_OFFSET, FONT_SIZE } = CONSTANTS;
             const lineElements = [svg`<line 
                 x1="${X_START}" 
                 y1="${Y_END}" 
@@ -38,14 +39,14 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                         <text 
                             x="${i*spacing-MEASUREMENT_OFFSET}" 
                             y="${Y_END + SPACING_OFFSET}" 
-                            font-size="6px">
+                            font-size="${FONT_SIZE}px">
                                 ${xData[i]}
                         </text>
                     `)
                 }
             } else {
-                const spacing = X_END / ((xData.end - xData.begin) / xData.interval);
-                for (let i = xData.begin; i < xData.end; i += xData.interval) {
+                const spacing = (X_END - FONT_SIZE) / ((xData.end - xData.begin) / xData.interval);
+                for (let i = xData.begin; i < xData.end + 1; i += xData.interval) {
                     const renderString = xData.type === 'number' ? i : new Date(i);
                     lineElements.push(svg`
                         <text 
@@ -63,6 +64,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
 
         private renderYAxis(yData: AxisData) {
             const { X_START, Y_START, Y_END } = GRAPH;
+            const { FONT_SIZE, SPACING_OFFSET } = CONSTANTS;
             const lineElements = [svg`<line 
                 x1="${X_START}"
                 y1="${Y_START}"
@@ -77,11 +79,16 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                     `)
                 }
             } else {
-                const spacing = Y_END / ((yData.end - yData.begin) / yData.interval);
-                for (let i = yData.begin; i > yData.end; i -= yData.interval) {
+                const spacing = (Y_END - FONT_SIZE) / ((yData.end - yData.begin) / yData.interval);
+                for (let i = yData.end; i > yData.begin - 1; i -= yData.interval) {
                     const renderString = yData.type === 'number' ? i : new Date(i);
                     lineElements.push(svg`
-                        <text y="${i*spacing-5}" x="-5" font-size="6px">${renderString}}</text>
+                        <text 
+                            y="${Y_END-i*spacing}" 
+                            x="-${SPACING_OFFSET}" 
+                            font-size="${FONT_SIZE}px">
+                                ${renderString}
+                        </text>
                     `)
                 }                
             }        
