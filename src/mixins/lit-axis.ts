@@ -1,12 +1,12 @@
-import { LitElement, svg } from 'lit';
+import { LitElement, svg, TemplateResult } from 'lit';
 import { Axis, AxisData } from '../types';
-import { GRAPH } from '../constants';
+import { AXIS, AXIS_TYPE, GRAPH } from '../constants';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T = {}> = new (...args: any[]) => T;
 
 export declare class LitAxisInterface {
-    renderAxis(axisData?: Axis<number>): unknown;
+    renderAxis(axisData?: Axis<AxisData<AXIS_TYPE>>): unknown;
 }
 
 const CONSTANTS = {
@@ -18,90 +18,87 @@ const CONSTANTS = {
 const defaults = {
     x: { begin: 0, end: 9, interval: 1, type: 'number' },
     y: { begin: 0, end: 9, interval: 1, type: 'number'}
-} as Axis<AxisData>;
+} as Axis<AxisData<AXIS_TYPE.NUMBER>>;
+
+type GeneratorArgs<T extends AXIS_TYPE> = {
+    axis: AXIS,
+    lineElements: Array<TemplateResult>,
+    data: T extends AXIS_TYPE.STRING ? Array<String> : AxisData<T>
+};
+type DateNum = AXIS_TYPE.DATE | AXIS_TYPE.NUMBER;
 
 export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) => {
     class LitAxisClass extends superClass {
-        private renderXAxis(xData: AxisData) {
-            const { X_START, X_END, Y_END } = GRAPH;
+        private generateLine(axis: AXIS, lineElements: Array<TemplateResult>): void {
+            const { X_START, X_END, Y_START, Y_END } = GRAPH;
+            lineElements.push(svg`
+                <line
+                    x1="${X_START}" 
+                    y1="${axis === AXIS.X ? Y_END : Y_START}" 
+                    x2="${axis === AXIS.X ? X_END : X_START}" 
+                    y2="${Y_END}"
+                    stoke-width="0.5"
+                    stroke="black"
+                >
+            `)
+        }
+        private generateStrLabels({ axis, lineElements, data }: GeneratorArgs<AXIS_TYPE.STRING>): void {
+            const { X_END, Y_END } = GRAPH;
             const { MEASUREMENT_OFFSET, SPACING_OFFSET, FONT_SIZE } = CONSTANTS;
-            const lineElements = [svg`<line 
-                x1="${X_START}" 
-                y1="${Y_END}" 
-                x2="${X_END}" 
-                y2="${Y_END}"
-                stoke-width="0.5"
-                stroke="black">`];
-            if (Array.isArray(xData)) {
-                const spacing = X_END / xData.length;
-                for (let i = xData.length; i > 0; i -= 1) {
+            const spacing = (axis === AXIS.X ? X_END : Y_END) / data.length;
+            for (let i = data.length; i > 0; i -= 1) {
+                const x = axis === AXIS.X ? i*spacing-MEASUREMENT_OFFSET : -SPACING_OFFSET;
+                const y = axis === AXIS.X ? Y_END + SPACING_OFFSET : i*spacing-MEASUREMENT_OFFSET;
+                lineElements.push(svg`
+                    <text 
+                        x="${x}" 
+                        y="${y}" 
+                        font-size="${FONT_SIZE}px">
+                            ${data[i]}
+                    </text>
+                `)
+            }
+        }
+        private generateDateNumLabels<T extends DateNum>(args: GeneratorArgs<T>) {
+                const { axis, lineElements, data } = args;
+                const { X_END, Y_END } = GRAPH;
+                const { FONT_SIZE, MEASUREMENT_OFFSET, SPACING_OFFSET } = CONSTANTS;
+                const spacing = ((axis === AXIS.X) ? X_END : Y_END - FONT_SIZE) 
+                    / ((data.end - data.begin) / data.interval);
+                let j = 0;
+                
+                for (let i = data.begin; i < data.end + 1; i += data.interval) {
+                    const x = axis === AXIS.X ? j*spacing+MEASUREMENT_OFFSET : -SPACING_OFFSET;
+                    const y = axis === AXIS.X ? Y_END + SPACING_OFFSET : Y_END-j*spacing
                     lineElements.push(svg`
                         <text 
-                            x="${i*spacing-MEASUREMENT_OFFSET}" 
-                            y="${Y_END + SPACING_OFFSET}" 
+                            x="${x}" 
+                            y="${y}" 
                             font-size="${FONT_SIZE}px">
-                                ${xData[i]}
+                                ${data.type === AXIS_TYPE.DATE ? new Date(i) : i}
                         </text>
                     `)
-                }
+                    j++;
+            }
+        }
+        private renderSingleAxis(data: AxisData<AXIS_TYPE>, axis: AXIS) {
+            const lineElements: Array<TemplateResult> = [];
+            this.generateLine(axis, lineElements);
+            if (Array.isArray(data)) {
+                this.generateStrLabels({ axis, lineElements, data});
             } else {
-                const spacing = (X_END - FONT_SIZE) / ((xData.end - xData.begin) / xData.interval);
-                for (let i = xData.begin; i < xData.end + 1; i += xData.interval) {
-                    const renderString = xData.type === 'number' ? i : new Date(i);
-                    lineElements.push(svg`
-                        <text 
-                            x="${i*spacing+MEASUREMENT_OFFSET}" 
-                            y="${Y_END + SPACING_OFFSET}" 
-                            font-size="6px">
-                                ${renderString}
-                        </text>
-                    `)
-                }                
-            }                        
+                this.generateDateNumLabels<typeof data.type>({ axis, lineElements, data});
+            }
                 
             return lineElements;
         }
 
-        private renderYAxis(yData: AxisData) {
-            const { X_START, Y_START, Y_END } = GRAPH;
-            const { FONT_SIZE, SPACING_OFFSET } = CONSTANTS;
-            const lineElements = [svg`<line 
-                x1="${X_START}"
-                y1="${Y_START}"
-                x2="${X_START}"
-                y2="${Y_END}"
-                stoke-width="0.5" 
-                stroke="black">`];
-            if (Array.isArray(yData)) {
-                for (let i = yData.length; i > 0; i -= 1) {
-                    lineElements.push(svg`
-                        <text y="${i*10-5}" x="-5" font-size="6px">${yData[i]}</text>
-                    `)
-                }
-            } else {
-                const spacing = (Y_END - FONT_SIZE) / ((yData.end - yData.begin) / yData.interval);
-                for (let i = yData.end; i > yData.begin - 1; i -= yData.interval) {
-                    const renderString = yData.type === 'number' ? i : new Date(i);
-                    lineElements.push(svg`
-                        <text 
-                            y="${Y_END-i*spacing}" 
-                            x="-${SPACING_OFFSET}" 
-                            font-size="${FONT_SIZE}px">
-                                ${renderString}
-                        </text>
-                    `)
-                }                
-            }        
-
-            return lineElements;
-        }
-
-        renderAxis(axisData: Axis<AxisData> = defaults) {
+        renderAxis(axisData: Axis<AxisData<AXIS_TYPE>> = defaults) {
             const { x, y } = axisData;
 
             return svg`
-                ${this.renderXAxis(x)}
-                ${this.renderYAxis(y)}
+                ${this.renderSingleAxis(x, AXIS.X)}
+                ${this.renderSingleAxis(y, AXIS.Y)}
             `
         }
     }
