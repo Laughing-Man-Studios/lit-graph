@@ -2,6 +2,7 @@ import { assert, fixture } from '@open-wc/testing';
 import { html, LitElement } from 'lit';
 import { AXIS_TYPE } from '../../constants';
 import { LitAxisMixin } from '../../mixins/lit-axis';
+import { AxisData } from '../../types';
 import * as Expected from './lit-axis_test.expect';
 
 class Numbers extends LitAxisMixin(LitElement) {
@@ -27,7 +28,7 @@ class Dates extends LitAxisMixin(LitElement) {
             end,
             interval: (end - begin) / 7,
             type: AXIS_TYPE.DATE
-        };
+        } as AxisData<AXIS_TYPE.DATE>;
         const payload = {
             y: axis,
             x: axis
@@ -44,8 +45,12 @@ class Dates extends LitAxisMixin(LitElement) {
 }
 customElements.define('test-dates', Dates);
 
-function stripHtmlComments(content) {
-    return content.replace(/<!--(?!>)[\S\s]*?-->/g, '');
+function stripHtmlComments(content: string | undefined): string {
+    if (content) {
+        return content.replace(/<!--(?!>)[\S\s]*?-->/g, '');
+    }
+
+    return '';
 }
 
 suite('lit-axis mixin', ()=> {
