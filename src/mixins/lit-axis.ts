@@ -26,6 +26,7 @@ type GeneratorArgs<T extends AXIS_TYPE> = {
     data: T extends AXIS_TYPE.STRING ? Array<String> : AxisData<T>
 };
 type DateNum = AXIS_TYPE.DATE | AXIS_TYPE.NUMBER;
+type LabelRenderer = (val: number) => string;
 
 export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) => {
     class LitAxisClass extends superClass {
@@ -59,12 +60,24 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                 `)
             }
         }
+        private getLabelRenderer(type: DateNum, interval: number): LabelRenderer {
+            if (type === AXIS_TYPE.NUMBER) {
+                return (val: number) => val.toString();
+            } else if (interval < 3600000) {
+                return (val: number) => new Date(val).toLocaleTimeString();
+            } else if (interval < 86400000) {
+                return (val: number) => new Date(val).toLocaleString();
+            } else {
+                return (val: number) => new Date(val).toLocaleDateString();
+            }
+        }
         private generateDateNumLabels<T extends DateNum>(args: GeneratorArgs<T>) {
                 const { axis, lineElements, data } = args;
                 const { X_END, Y_END } = GRAPH;
                 const { FONT_SIZE, MEASUREMENT_OFFSET, SPACING_OFFSET } = CONSTANTS;
-                const spacing = ((axis === AXIS.X) ? X_END : Y_END - FONT_SIZE) 
+                const spacing = ((axis === AXIS.X ? X_END : Y_END) - FONT_SIZE) 
                     / ((data.end - data.begin) / data.interval);
+                const labelRenderer = this.getLabelRenderer(data.type, data.interval);
                 let j = 0;
                 
                 for (let i = data.begin; i < data.end + 1; i += data.interval) {
@@ -75,7 +88,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                             x="${x}" 
                             y="${y}" 
                             font-size="${FONT_SIZE}px">
-                                ${data.type === AXIS_TYPE.DATE ? new Date(i) : i}
+                                ${labelRenderer(i)}
                         </text>
                     `)
                     j++;
