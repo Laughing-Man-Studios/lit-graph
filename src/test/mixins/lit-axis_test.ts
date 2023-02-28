@@ -11,7 +11,7 @@ class Numbers extends LitAxisMixin(LitElement) {
             <svg 
                 height=300 
                 width=300 
-                viewBox="-5 0 100 105">
+                viewBox="-5 0 150 155">
                     ${this.renderAxis()}
             </svg>
         `
@@ -37,7 +37,7 @@ class Dates extends LitAxisMixin(LitElement) {
             <svg 
                 height=300 
                 width=300 
-                viewBox="-5 0 100 105">
+                viewBox="-5 0 150 165">
                          ${this.renderAxis(payload)}
             </svg>
         `
