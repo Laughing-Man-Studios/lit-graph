@@ -6,7 +6,7 @@ export type Axis<T> = {
 }
 
 export type AxisData<T extends AXIS_TYPE> = 
-T extends AXIS_TYPE.STRING ? Array<String> : { 
+T extends AXIS_TYPE.STRING ? Array<string> : { 
     begin: number,
     end: number,
     interval: number,
