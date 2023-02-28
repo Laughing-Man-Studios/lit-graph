@@ -14,7 +14,7 @@ export declare class LitAxisInterface {
 const CONSTANTS = {
     MEASUREMENT_OFFSET: -1,
     SPACING_OFFSET: {
-        X: 1.7,
+        X: 5,
         Y: 1
     },
     FONT_SIZE: {
@@ -106,7 +106,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                     </text>
                 `);
             }
-        }
+    }
 
         private generateAxis(data: AxisData<AXIS_TYPE>, axis: AXIS): LineElements {
             const lineElements: Array<TemplateResult> = []; 
@@ -144,7 +144,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                 labelsArr.forEach((el) => {
                     const { width, height } = el.getBBox();
                     const x = isYAxis ? -(width + SPACING_OFFSET.Y) : currentPos;
-                    const y = isYAxis ? currentPos : Y_END + height - SPACING_OFFSET.X;
+                    const y = isYAxis ? currentPos : Y_END + SPACING_OFFSET.X;
 
                     el.setAttribute('x', x.toString());
                     el.setAttribute('y', y.toString());
