@@ -159,7 +159,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
 
                 labelsArr.forEach((el) => {
                     const { width, height } = el.getBBox();
-                    const x = isYAxis ? -(width + SPACING_OFFSET.Y) : currentPos;
+                    const x = isYAxis ? -(width + SPACING_OFFSET.Y) : currentPos - (width/2);
                     const y = isYAxis ? currentPos + spacing + height: Y_END + SPACING_OFFSET.X;
 
                     el.setAttribute('x', x.toString());
