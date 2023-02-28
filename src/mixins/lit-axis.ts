@@ -120,6 +120,19 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
             return lineElements
         }
 
+        private updateXDatePos(el: SVGTextElement): void {
+            const dateText = el.querySelectorAll('tspan');
+
+            if (dateText.length == 2) {
+                const [ date, time ] = dateText;
+
+                const { width, height } = date.getBBox();
+    
+                time.setAttribute('dy', height.toString());
+                time.setAttribute('dx', (-width).toString());
+            }
+        }
+
         private updateMeasurementLabels(axis: AXIS): void {
             const { Y_END, X_END } = GRAPH;
             const { SPACING_OFFSET } = CONSTANTS;
@@ -130,6 +143,9 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
             if (labels?.[Symbol.iterator]) {
                 const labelsArr = Array.from(labels);
                 const totalLabelSize = labelsArr.reduce((size, el) => {
+                    if (!isYAxis) {
+                        this.updateXDatePos(el);
+                    }
                     const { width, height } = el.getBBox();
                     
                     return size + (isYAxis ? height : width); 
