@@ -1,10 +1,3 @@
-export const GRAPH = {
-    X_START: 0,
-    X_END: 150,
-    Y_START: 0,
-    Y_END: 150
-};
-
 export enum AXIS_TYPE {
     DATE = 'date',
     NUMBER = 'number',
@@ -15,3 +8,14 @@ export enum AXIS {
     X = 'x',
     Y = 'y'
 }
+
+export const GRAPH = {
+    [AXIS.X]: {
+        START: 0,
+        END: 150
+    },
+    [AXIS.Y]: {
+        START: 0,
+        END: 150
+    }
+};

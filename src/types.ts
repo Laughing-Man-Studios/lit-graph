@@ -1,4 +1,4 @@
-import { AXIS_TYPE } from './constants';
+import { AXIS, AXIS_TYPE } from './constants';
 
 export type Axis<T> = { 
     x: T;
@@ -12,3 +12,13 @@ T extends AXIS_TYPE.STRING ? Array<string> : {
     interval: number,
     type: T
 };
+
+type SingleAxisCoords = {
+    START: number;
+    END: number;
+}
+
+export type AxisCoords = {
+    [AXIS.X]: SingleAxisCoords;
+    [AXIS.Y]: SingleAxisCoords;
+}

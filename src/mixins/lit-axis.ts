@@ -1,5 +1,5 @@
 import { LitElement, nothing, svg, TemplateResult } from 'lit';
-import { Axis, AxisData } from '../types';
+import { Axis, AxisData, AxisCoords } from '../types';
 import { AXIS, AXIS_TYPE, GRAPH } from '../constants';
 import { state } from 'lit/decorators.js';
 import { ref, createRef } from 'lit/directives/ref.js'
@@ -9,6 +9,11 @@ type Constructor<T = {}> = new (...args: any[]) => T;
 
 export declare class LitAxisInterface {
     renderAxis(axisData?: Axis<AxisData<AXIS_TYPE>>): unknown;
+}
+
+interface LitGraphCoords {
+    graph?: AxisCoords;
+    viewBox?: AxisCoords;
 }
 
 const CONSTANTS = {
@@ -45,19 +50,21 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
         };
 
         private generateLine(axis: AXIS, lineElements: LineElements): void {
+            const X = GRAPH[AXIS.X];
+            const Y = GRAPH[AXIS.Y];
 
-            const { X_START, X_END, Y_START, Y_END } = GRAPH;
             lineElements.push(svg`
                 <line
-                    x1="${X_START}" 
-                    y1="${axis === AXIS.X ? Y_END : Y_START}" 
-                    x2="${axis === AXIS.X ? X_END : X_START}" 
-                    y2="${Y_END}"
+                    x1="${X.START}" 
+                    y1="${axis === AXIS.X ? Y.END : Y.START}" 
+                    x2="${axis === AXIS.X ? X.END : X.START}" 
+                    y2="${Y.END}"
                     stoke-width="0.5"
                     stroke="black"
                 >
-            `)
+            `);
         }
+
         private generateStrLabels(data: Array<string>, lineElements: LineElements): void {
             const { FONT_SIZE } = CONSTANTS;
             for (let i = data.length; i > 0; i -= 1) {
@@ -134,11 +141,14 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
         }
 
         private updateMeasurementLabels(axis: AXIS): void {
-            const { Y_END, X_END } = GRAPH;
+            const graphAxisCoords = (this as unknown as LitGraphCoords)?.graph;
+            // const viewBoxCoords = (this as unknown as LitGraphCoords)?.viewBox;
             const { SPACING_OFFSET } = CONSTANTS;
             const isYAxis = axis === AXIS.Y;
-            const END = isYAxis ? Y_END : X_END;
+            const END = graphAxisCoords ? graphAxisCoords[axis].END :  GRAPH[axis].END;
+            // const START = graphAxisCoords ? graphAxisCoords[axis].START :  GRAPH[axis].START;
             const labels = this.labels[axis].value?.querySelectorAll('text');
+            let labelEdge = 0;
 
             if (labels?.[Symbol.iterator]) {
                 const labelsArr = Array.from(labels);
@@ -160,13 +170,27 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                 labelsArr.forEach((el) => {
                     const { width, height } = el.getBBox();
                     const x = isYAxis ? -(width + SPACING_OFFSET.Y) : currentPos - (width/2);
-                    const y = isYAxis ? currentPos + spacing + height: Y_END + SPACING_OFFSET.X;
+                    const y = isYAxis ? currentPos + spacing + height : END + SPACING_OFFSET.X;
 
                     el.setAttribute('x', x.toString());
                     el.setAttribute('y', y.toString());
 
                     currentPos += (isYAxis ? height : width) + spacing;
+
+                    if (isYAxis && labelEdge > x) {
+                        labelEdge = x;
+                    } else if (labelEdge < y) {
+                        labelEdge = y;
+                    }
                 });
+
+
+                if (totalLabelSize > END && graphAxisCoords) {
+                    const newGraphAxisCoords = { ...graphAxisCoords };
+                    
+                    newGraphAxisCoords[axis].END = totalLabelSize;
+                    (this as unknown as LitGraphCoords).graph = newGraphAxisCoords;
+                }
             }
         }
 

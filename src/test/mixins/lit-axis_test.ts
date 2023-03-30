@@ -1,9 +1,11 @@
 import { assert, fixture } from '@open-wc/testing';
 import { html, LitElement } from 'lit';
-import { AXIS_TYPE } from '../../constants';
+import { state } from 'lit/decorators.js';
+import { AXIS_TYPE, GRAPH } from '../../constants';
 import { LitAxisMixin } from '../../mixins/lit-axis';
 import { AxisData } from '../../types';
 import * as Expected from './lit-axis_test.expect';
+import { ref, createRef } from 'lit/directives/ref.js';
 
 class Numbers extends LitAxisMixin(LitElement) {
     override render () {
@@ -20,24 +22,47 @@ class Numbers extends LitAxisMixin(LitElement) {
 customElements.define('test-numbers', Numbers);
 
 class Dates extends LitAxisMixin(LitElement) {
-    override render () {
+
+    @state()
+    protected graph = { ...GRAPH };
+
+    @state()
+    protected viewBox = { ...GRAPH }
+
+    private svg = createRef<SVGSVGElement>();
+
+    override updated() {
+        const svg = this.svg.value;
+        if (svg) {
+            const box = svg.getBBox();
+            const xS = box && box.x || 0;
+            const yS = box && box.y || 0;
+            const xE = box && box.width || 100;
+            const yE = box && box.height || 100;
+
+            svg.setAttribute('viewBox', `${xS} ${yS} ${xE} ${yE}`)
+        }
+    }
+
+    override render() {
         const begin = Number(new Date('2023-01-01T12:00:00'));
         const end = Number(new Date('2023-01-07T12:00:00'));
         const axis = {
             begin,
             end,
-            interval: (end - begin) / 7,
+            interval: (end - begin) / 10,
             type: AXIS_TYPE.DATE
         } as AxisData<AXIS_TYPE.DATE>;
         const payload = {
             y: axis,
             x: axis
         };
+
         return html `
             <svg 
+                ${ref(this.svg)}
                 height=300 
-                width=300 
-                viewBox="-5 0 150 165">
+                width=300>
                          ${this.renderAxis(payload)}
             </svg>
         `
@@ -74,7 +99,7 @@ suite('lit-axis mixin', ()=> {
         const el = await fixture(html`<test-dates></test-dates>`);
         const innerHtml = stripHtmlComments(el.shadowRoot?.innerHTML);
         if (innerHtml) {
-            assert.equal(innerHtml, Expected.defaults, 'Expected render with dates to display date measurement labels');
+            assert.equal(innerHtml, Expected.dates, 'Expected render with dates to display date measurement labels');
         } else {
             assert.fail('Component shadowroot did not contain any inner HTML');
         }
