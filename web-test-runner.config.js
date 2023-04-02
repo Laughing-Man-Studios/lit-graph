@@ -11,7 +11,8 @@ const browsers = {
   // ===========
   chromium: playwrightLauncher({product: 'chromium'}),
   firefox: playwrightLauncher({product: 'firefox'}),
-  webkit: playwrightLauncher({product: 'webkit'}),
+  // TODO: Add this back in once axis is fixed for safari.
+  // webkit: playwrightLauncher({product: 'webkit'}),
 };
 
 // Prepend BROWSERS=x,y to `npm run test` to run a subset of browsers
@@ -48,13 +49,15 @@ export default {
     legacyPlugin({
       polyfills: {
         webcomponents: true,
-        // Inject lit's polyfill-support module into test files, which is required
-        // for interfacing with the webcomponents polyfills
+        // Inject lit's polyfill-support module into test files, which 
+        // is required for interfacing with the webcomponents polyfills
         custom: [
           {
             name: 'lit-polyfill-support',
             path: 'node_modules/lit/polyfill-support.js',
-            test: "!('attachShadow' in Element.prototype) || !('getRootNode' in Element.prototype) || window.ShadyDOM && window.ShadyDOM.force",
+            test: `!('attachShadow' in Element.prototype) 
+              || !('getRootNode' in Element.prototype) |
+              | window.ShadyDOM && window.ShadyDOM.force`,
             module: false,
           },
         ],
