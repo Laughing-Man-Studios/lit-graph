@@ -4,19 +4,18 @@ import { state } from 'lit/decorators.js';
 import { AXIS_TYPE, GRAPH } from '../../constants';
 import { LitAxisMixin } from '../../mixins/lit-axis';
 import { AxisData } from '../../types';
-import * as Expected from './lit-axis_test.expect';
 import { ref, createRef } from 'lit/directives/ref.js';
 
 class Numbers extends LitAxisMixin(LitElement) {
     override render () {
-        return html `
+        return (html `
             <svg 
                 height=300 
                 width=300 
                 viewBox="-5 0 150 155">
                     ${this.renderAxis()}
             </svg>
-        `
+        `);
     }
 }
 customElements.define('test-numbers', Numbers);
@@ -25,9 +24,6 @@ class Dates extends LitAxisMixin(LitElement) {
 
     @state()
     protected graph = { ...GRAPH };
-
-    @state()
-    protected viewBox = { ...GRAPH }
 
     private svg = createRef<SVGSVGElement>();
 
@@ -40,7 +36,7 @@ class Dates extends LitAxisMixin(LitElement) {
             const xE = box && box.width || 100;
             const yE = box && box.height || 100;
 
-            svg.setAttribute('viewBox', `${xS} ${yS} ${xE} ${yE}`)
+            svg.setAttribute('viewBox', `${xS} ${yS} ${xE} ${yE}`);
         }
     }
 
@@ -58,25 +54,29 @@ class Dates extends LitAxisMixin(LitElement) {
             x: axis
         };
 
-        return html `
+        return (html `
             <svg 
                 ${ref(this.svg)}
                 height=300 
                 width=300>
                          ${this.renderAxis(payload)}
             </svg>
-        `
+        `);
     }
 }
 customElements.define('test-dates', Dates);
 
-function stripHtmlComments(content: string | undefined): string {
-    if (content) {
-        return content.replace(/<!--(?!>)[\S\s]*?-->/g, '');
-    }
-
-    return '';
-}
+const expects = {
+    default: {
+        x: [-1,13,28,43,58,73,88,103,118,133],
+        y: [150,135,120,105,90,75,60,45,30,15]
+    },
+    dates: {
+        x: [-7.6,7.6,23,38,54,71,86.2,102.4,117.6,133.6,150.6],
+        y: [150,136.3,122.7,109.9,95.4,81.8,68.1,54.4,40.9,27.2,13.6]
+    },
+    errorOffset: 1.5
+};
 
 suite('lit-axis mixin', ()=> {
     test('is defined', () => {
@@ -86,22 +86,66 @@ suite('lit-axis mixin', ()=> {
     });
 
     test('renders with default values (numbers)', async () => {
-        const el = await fixture(html`<test-numbers></test-numbers>`);
-        const innerHtml = stripHtmlComments(el.shadowRoot?.innerHTML);
-        if (innerHtml) {
-            assert.equal(innerHtml, Expected.defaults, 'Expected render with no arguments to return default values');
+        const el: LitElement = await fixture(html`<test-numbers></test-numbers>`);
+        const xLabels = el.renderRoot.querySelectorAll('#xLabels text');
+        const yLabels = el.renderRoot.querySelectorAll('#yLabels text');
+        if (el) {
+            assert.lengthOf(xLabels, 10, 'Expected number of x labels to equal 10');
+            assert.lengthOf(yLabels, 10, 'Expected number of y labels to equal 10');
+            
+            xLabels.forEach((label, index) => {
+                assert.isBelow(Number(label.getAttribute('x')), expects.default.x[index]+1);
+                assert.isAbove(Number(label.getAttribute('x')), expects.default.x[index]-1);
+            });
+
+            yLabels.forEach((label, index) => {
+                assert.isBelow(Number(label.getAttribute('y')), expects.default.y[index]+1);
+                assert.isAbove(Number(label.getAttribute('y')), expects.default.y[index]-1);
+            });
+
         } else {
-            assert.fail('Component shadowroot did not contain any inner HTML');
+            assert.fail('Component did not render');
         }
     });
 
     test('renders with dates', async () => {
-        const el = await fixture(html`<test-dates></test-dates>`);
-        const innerHtml = stripHtmlComments(el.shadowRoot?.innerHTML);
-        if (innerHtml) {
-            assert.equal(innerHtml, Expected.dates, 'Expected render with dates to display date measurement labels');
+        const xLabelYVal = 155;
+        const yLabelXVal = -31.4;
+        const { dates, errorOffset } = expects;
+        const { userAgent: UA } = navigator;
+        const isWebkit = UA.includes('Safari') && UA.includes('Version');
+        const offset = isWebkit ? errorOffset + 6 : errorOffset;
+        const el:LitElement = await fixture(html`<test-dates></test-dates>`);
+        const xLabels = el.renderRoot.querySelectorAll('#xLabels text');
+        const yLabels = el.renderRoot.querySelectorAll('#yLabels text');
+        if (el) {
+            assert.lengthOf(xLabels, 11, 'Number of X Labels is wrong');
+            assert.lengthOf(yLabels, 11, 'Number of Y Labels is wrong');
+
+            xLabels.forEach((label, index) => {
+                const xVal = Number(label.getAttribute('x'));
+                const yVal = Number(label.getAttribute('y'));
+
+                assert.isBelow(yVal, xLabelYVal + offset);
+                assert.isAbove(yVal, xLabelYVal - offset);
+
+                assert.isBelow(xVal, dates.x[index] + offset);
+                assert.isAbove(xVal, dates.x[index] - offset);
+            });
+
+            yLabels.forEach((label, index) => {
+                const xVal = Number(label.getAttribute('x'));
+                const yVal = Number(label.getAttribute('y'));
+
+                assert.isBelow(xVal, yLabelXVal + offset);
+                assert.isAbove(xVal, yLabelXVal - offset);
+                
+
+                assert.isBelow(yVal, dates.y[index] + offset);
+                assert.isAbove(yVal, dates.y[index] - offset);
+            });
         } else {
-            assert.fail('Component shadowroot did not contain any inner HTML');
+            assert.fail('Component did not render');
         }
     });
 });
