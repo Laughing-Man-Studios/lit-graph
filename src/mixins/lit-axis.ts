@@ -1,4 +1,4 @@
-import { LitElement, nothing, svg, TemplateResult } from 'lit';
+import { LitElement, nothing, svg, css, TemplateResult } from 'lit';
 import { Axis, AxisData, AxisCoords } from '../types';
 import { AXIS, AXIS_TYPE, GRAPH } from '../constants';
 import { state } from 'lit/decorators.js';
@@ -25,11 +25,6 @@ const CONSTANTS = {
     SPACING_OFFSET: {
         X: 5,
         Y: 1
-    },
-    FONT_SIZE: {
-        [AXIS_TYPE.DATE]: 4,
-        [AXIS_TYPE.NUMBER]: 6,
-        [AXIS_TYPE.STRING]: 4
     }
 };
 
@@ -40,14 +35,33 @@ const defaults = {
 
 export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) => {
     class LitAxisClass extends superClass {
+
+    static styles = (css`
+        text {
+            font-family: serif;
+        }
+        text.date,
+        text.string {
+            font-size: 4px;
+        }
+        text.number {
+            font-size: 6px;
+        }
+    `);
         
         @state()
-        private isLoading = true;
+        declare private isLoading;
 
         private labels = {
             [AXIS.X]: createRef(),
             [AXIS.Y]: createRef()
         };
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        constructor(...args: any[]) {
+            super(args);
+            this.isLoading = true;
+        }
 
         /* Generator Methods */
 
@@ -76,13 +90,12 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
         }
 
         private generateStrLabels(data: Array<string>, lineElements: LineElements): void {
-            const { FONT_SIZE } = CONSTANTS;
             for (let i = data.length; i > 0; i -= 1) {
                 lineElements.push(svg`
                     <text 
                         x="0" 
-                        y="0" 
-                        font-size="${FONT_SIZE[AXIS_TYPE.STRING]}px">
+                        y="0"
+                        class="${AXIS_TYPE.STRING}">
                             ${data[i]}
                     </text>
                 `);
@@ -97,10 +110,10 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
             } else if (interval < 86400000) {
                 return (val: number) => {
                     return (svg`
-                        <tspan font-size="4px">
+                        <tspan>
                             ${new Date(val).toLocaleDateString()}
                         </tspan>
-                        <tspan dy="0" dx="0" font-size="4px">
+                        <tspan dy="0" dx="0">
                             ${new Date(val).toLocaleTimeString('en-GB')}
                         </tspan>
                     `);
@@ -110,7 +123,6 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
             }
         }
         private generateDateNumLabels(data: AxisData<DateNum>, lineElements: LineElements): void {
-            const { FONT_SIZE } = CONSTANTS;
             const labelRenderer = this.generateLabelRenderer(data.type, data.interval);
             
             for (let i = data.begin; i < data.end + 1; i += data.interval) {
@@ -118,7 +130,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                     <text 
                         x="0" 
                         y="0"
-                        font-size="${FONT_SIZE[data.type]}px">
+                        class="${data.type}">
                             ${labelRenderer(i)}
                     </text>
                 `);
@@ -146,15 +158,12 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                     this.updateXDatePos(el);
                 }
                 const { width, height } = el.getBBox();
+                console.log(`Label ${isYAxis ? 'Y' : 'X'} -> width: ${width} height: ${height}`);
                 
                 return size + (isYAxis ? height : width); 
             }, 0);
-            const spacing = Math.max((END - totalLabelSize)/labelsArr.length, 0);
 
-            return {
-                totalLabelSize,
-                spacing
-            };
+            return Math.max((END - totalLabelSize)/labelsArr.length, 0);
         }
 
         private updateLabels(labelsArr: LabelsArr, END: number, isYAxis: boolean, spacing: number) {
@@ -180,15 +189,6 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
             });
         }
 
-        private updateGraphCoords(size: number, END: number, crds: AxisCoords | null, axis: AXIS) {
-            if (size > END && crds) {
-                const newGraphAxisCoords = { ...crds };
-                
-                newGraphAxisCoords[axis].END = size;
-                (this as unknown as LitGraphCoords).graph = newGraphAxisCoords;
-            }
-        }
-
         private updateMeasurementLabels(axis: AXIS): void {
             const graphAxisCoords = (this as unknown as LitGraphCoords)?.graph || null;
             const isYAxis = axis === AXIS.Y;
@@ -198,22 +198,23 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
 
             if (labels?.[Symbol.iterator]) {
                 const labelsArr = Array.from(labels);
-                const { totalLabelSize, spacing } = this.getDimensionAttr(labelsArr, END, isYAxis);
+                const spacing = this.getDimensionAttr(labelsArr, END, isYAxis);
                 
                 if(isYAxis) {
                     labelsArr.reverse();
                 }
 
                 this.updateLabels(labelsArr, END, isYAxis, spacing);
-                this.updateGraphCoords(totalLabelSize, END, graphAxisCoords, axis);
-
             }
         }
 
         override firstUpdated(): void {
             this.updateMeasurementLabels(AXIS.X);
             this.updateMeasurementLabels(AXIS.Y);
-            this.isLoading = false;
+            setTimeout(() => {
+                this.isLoading = false;
+            });
+            
         }
 
         private generateAxis(data: AxisData<AXIS_TYPE>, axis: AXIS): LineElements {
