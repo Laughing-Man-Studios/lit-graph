@@ -1,7 +1,7 @@
 import { assert, fixture } from '@open-wc/testing';
 import { html, LitElement } from 'lit';
-import { state } from 'lit/decorators.js';
-import { AXIS_TYPE, GRAPH } from '../../constants';
+import { timeout } from '../helpers';
+import { AXIS_TYPE } from '../../constants';
 import { LitAxisMixin } from '../../mixins/lit-axis';
 import { AxisData } from '../../types';
 import { ref, createRef } from 'lit/directives/ref.js';
@@ -21,9 +21,6 @@ class Numbers extends LitAxisMixin(LitElement) {
 customElements.define('test-numbers', Numbers);
 
 class Dates extends LitAxisMixin(LitElement) {
-
-    @state()
-    protected graph = { ...GRAPH };
 
     private svg = createRef<SVGSVGElement>();
 
@@ -86,7 +83,9 @@ suite('lit-axis mixin', ()=> {
     });
 
     test('renders with default values (numbers)', async () => {
+        console.log('Default', window.navigator.userAgent);
         const el: LitElement = await fixture(html`<test-numbers></test-numbers>`);
+        await timeout(500);
         const xLabels = el.renderRoot.querySelectorAll('#xLabels text');
         const yLabels = el.renderRoot.querySelectorAll('#yLabels text');
         if (el) {
@@ -94,13 +93,17 @@ suite('lit-axis mixin', ()=> {
             assert.lengthOf(yLabels, 10, 'Expected number of y labels to equal 10');
             
             xLabels.forEach((label, index) => {
-                assert.isBelow(Number(label.getAttribute('x')), expects.default.x[index]+1);
-                assert.isAbove(Number(label.getAttribute('x')), expects.default.x[index]-1);
+                const coord = Number(label.getAttribute('x'));
+                console.log(`X Label ${index}: X coord -> ${coord}`);
+                assert.isBelow(coord, expects.default.x[index]+1);
+                assert.isAbove(coord, expects.default.x[index]-1);
             });
 
             yLabels.forEach((label, index) => {
-                assert.isBelow(Number(label.getAttribute('y')), expects.default.y[index]+1);
-                assert.isAbove(Number(label.getAttribute('y')), expects.default.y[index]-1);
+                const coord = Number(label.getAttribute('y'));
+                console.log(`Y Label ${index}: Y coord -> ${coord}`);
+                assert.isBelow(coord , expects.default.y[index]+1);
+                assert.isAbove(coord, expects.default.y[index]-1);
             });
 
         } else {
@@ -109,6 +112,7 @@ suite('lit-axis mixin', ()=> {
     });
 
     test('renders with dates', async () => {
+        console.log('DATES', window.navigator.userAgent);
         const xLabelYVal = 155;
         const yLabelXVal = -31.4;
         const { dates, errorOffset } = expects;
