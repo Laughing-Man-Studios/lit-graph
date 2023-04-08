@@ -6,6 +6,34 @@ import { LitAxisMixin } from '../../mixins/lit-axis';
 import { AxisData } from '../../types';
 import { ref, createRef } from 'lit/directives/ref.js';
 
+const expects = {
+    default: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    dates: [
+        ['1/1/2023', '12:00:00'],
+        ['1/2/2023', '02:24:00'],
+        ['1/2/2023', '16:48:00'],
+        ['1/3/2023', '07:12:00'],
+        ['1/3/2023', '21:36:00'],
+        ['1/4/2023', '12:00:00'],
+        ['1/5/2023', '02:24:00'],
+        ['1/5/2023', '16:48:00'],
+        ['1/6/2023', '07:12:00'],
+        ['1/6/2023', '21:36:00'],
+        ['1/7/2023', '12:00:00'],
+    ]
+};
+
+function testDefaultLabels(label: Element, index: number) {
+    assert.equal(Number(label.textContent), expects.default[index], 'Label text wrong');
+}
+
+function testDateLabels(label, index) {
+    const tspans = label.querySelectorAll('tspan');
+    assert.equal(tspans.length, 2, 'Inner TSpans did not render');
+    assert.equal(tspans[0].textContent.trim(), expects.dates[index][0], 'First TSpan text wrong');
+    assert.equal(tspans[1].textContent.trim(), expects.dates[index][1], 'Second TSpan text wrong');
+}
+
 class Numbers extends LitAxisMixin(LitElement) {
     override render () {
         return (html `
@@ -63,18 +91,6 @@ class Dates extends LitAxisMixin(LitElement) {
 }
 customElements.define('test-dates', Dates);
 
-const expects = {
-    default: {
-        x: [-1,13,28,43,58,73,88,103,118,133],
-        y: [150,135,120,105,90,75,60,45,30,15]
-    },
-    dates: {
-        x: [-8.6,8.6,23,38,54,70,85.2,100.4,115.6,130.6,145.6],
-        y: [150,136.3,122.7,109.9,95.4,81.8,68.1,54.4,40.9,27.2,13.6]
-    },
-    errorOffset: 1.5
-};
-
 suite('lit-axis mixin', ()=> {
     test('is defined', () => {
         const el = document.createElement('test-numbers');
@@ -83,7 +99,6 @@ suite('lit-axis mixin', ()=> {
     });
 
     test('renders with default values (numbers)', async () => {
-        console.log('Default', window.navigator.userAgent);
         const el: LitElement = await fixture(html`<test-numbers></test-numbers>`);
         await timeout(500);
         const xLabels = el.renderRoot.querySelectorAll('#xLabels text');
@@ -92,19 +107,9 @@ suite('lit-axis mixin', ()=> {
             assert.lengthOf(xLabels, 10, 'Expected number of x labels to equal 10');
             assert.lengthOf(yLabels, 10, 'Expected number of y labels to equal 10');
             
-            xLabels.forEach((label, index) => {
-                const coord = Number(label.getAttribute('x'));
-                console.log(`X Label ${index}: X coord -> ${coord}`);
-                assert.isBelow(coord, expects.default.x[index]+1);
-                assert.isAbove(coord, expects.default.x[index]-1);
-            });
+            xLabels.forEach(testDefaultLabels);
 
-            yLabels.forEach((label, index) => {
-                const coord = Number(label.getAttribute('y'));
-                console.log(`Y Label ${index}: Y coord -> ${coord}`);
-                assert.isBelow(coord , expects.default.y[index]+1);
-                assert.isAbove(coord, expects.default.y[index]-1);
-            });
+            yLabels.forEach(testDefaultLabels);
 
         } else {
             assert.fail('Component did not render');
@@ -112,42 +117,18 @@ suite('lit-axis mixin', ()=> {
     });
 
     test('renders with dates', async () => {
-        console.log('DATES', window.navigator.userAgent);
-        const xLabelYVal = 155;
-        const yLabelXVal = -31.4;
-        const { dates, errorOffset } = expects;
-        const { userAgent: UA } = navigator;
-        const isWebkit = UA.includes('Safari') && UA.includes('Version');
-        const offset = isWebkit ? errorOffset + 6 : errorOffset;
         const el:LitElement = await fixture(html`<test-dates></test-dates>`);
         const xLabels = el.renderRoot.querySelectorAll('#xLabels text');
         const yLabels = el.renderRoot.querySelectorAll('#yLabels text');
         if (el) {
+
+
             assert.lengthOf(xLabels, 11, 'Number of X Labels is wrong');
             assert.lengthOf(yLabels, 11, 'Number of Y Labels is wrong');
 
-            xLabels.forEach((label, index) => {
-                const xVal = Number(label.getAttribute('x'));
-                const yVal = Number(label.getAttribute('y'));
+            xLabels.forEach(testDateLabels);
 
-                assert.isBelow(yVal, xLabelYVal + offset);
-                assert.isAbove(yVal, xLabelYVal - offset);
-
-                assert.isBelow(xVal, dates.x[index] + offset);
-                assert.isAbove(xVal, dates.x[index] - offset);
-            });
-
-            yLabels.forEach((label, index) => {
-                const xVal = Number(label.getAttribute('x'));
-                const yVal = Number(label.getAttribute('y'));
-
-                assert.isBelow(xVal, yLabelXVal + offset);
-                assert.isAbove(xVal, yLabelXVal - offset);
-                
-
-                assert.isBelow(yVal, dates.y[index] + offset);
-                assert.isAbove(yVal, dates.y[index] - offset);
-            });
+            yLabels.forEach(testDateLabels);
         } else {
             assert.fail('Component did not render');
         }

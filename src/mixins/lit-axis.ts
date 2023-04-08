@@ -158,7 +158,6 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                     this.updateXDatePos(el);
                 }
                 const { width, height } = el.getBBox();
-                console.log(`Label ${isYAxis ? 'Y' : 'X'} -> width: ${width} height: ${height}`);
                 
                 return size + (isYAxis ? height : width); 
             }, 0);
