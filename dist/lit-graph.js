@@ -15,14 +15,8 @@ import { customElement, property } from 'lit/decorators.js';
  */
 let MyElement = class MyElement extends LitElement {
     constructor() {
-        super(...arguments);
-        /**
-         * The name to say "Hello" to.
-         */
-        this.name = 'World';
-        /**
-         * The number of times the button has been clicked.
-         */
+        super();
+        this.name = "World";
         this.count = 0;
     }
     render() {
