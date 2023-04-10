@@ -1,8 +1,8 @@
 import { AXIS, AXIS_TYPE } from './constants';
 
-export type Axis<T> = { 
+export type Axis<T, U> = { 
     x: T;
-    y: T;
+    y: U;
 };
 
 export type AxisData<T extends AXIS_TYPE> = 
@@ -22,3 +22,7 @@ export type AxisCoords = {
     [AXIS.X]: SingleAxisCoords;
     [AXIS.Y]: SingleAxisCoords;
 };
+
+export type AxisType = number | string | Date;
+
+export type PlotData = Array<Axis<AxisType, AxisType>>;
