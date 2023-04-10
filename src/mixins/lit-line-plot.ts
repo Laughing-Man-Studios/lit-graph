@@ -1,6 +1,6 @@
 import { LitElement, svg } from 'lit';
 import { AXIS, AXIS_TYPE, GRAPH } from '../constants';
-import { PlotData, Axis, AxisType, AxisData, SingleAxisData } from '../types';
+import { PlotData, Axis, AxisType, AxisData, SingleAxisData, NUM_AXIS_TYPE } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T = {}> = new (...args: any[]) => T;
@@ -27,21 +27,28 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: 
         }
 
         private generateNumAxisPosition(
-            plot: AxisType, data: SingleAxisData<AXIS_TYPE>, axis: AXIS
+            plot: number, data: SingleAxisData<NUM_AXIS_TYPE>, axis: AXIS
         ): number {
             const { START, END } = GRAPH[axis];
 
-            return 0;
+            return (END -START) * (data.end - data.begin) / plot;
         }
 
         private getAxisPosition(
             plot: AxisType, data: SingleAxisData<AXIS_TYPE>, axis: AXIS
         ): number {
-            if (Array.isArray(data) && typeof plot === 'string') {
-                return this.generateStringAxisPosition(plot, data, axis);
-            } else {
-                return this.generateNumAxisPosition(plot, data, axis);
+            if (Array.isArray(data)) {
+                if (typeof plot === 'string') {
+                    return this.generateStringAxisPosition(plot, data, axis);
+                }
+                throw new Error('Axis Data is of type string but plot is Number');
             }
+
+            if (typeof plot !== 'number') {
+                throw new Error('Axis Data is of type number but plot is String');
+            }
+
+            return this.generateNumAxisPosition(plot, data, axis);
         }
 
         private getPosition(
