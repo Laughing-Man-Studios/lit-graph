@@ -13,11 +13,17 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: 
     class LitLinePlotClass extends superClass {
 
         private generateStringAxisPosition(
-            plot: AxisType, data: SingleAxisData<AXIS_TYPE>, axis: AXIS
+            plot: string, data: SingleAxisData<AXIS_TYPE.STRING>, axis: AXIS
         ): number {
             const { START, END } = GRAPH[axis];
 
-            return 0;
+            const plotIndex = data.indexOf(plot);
+
+            if(plotIndex < 0) {
+                throw new Error('String Plot doesnt exist in axis data');
+            }
+
+            return (END - START) * (plotIndex/data.length);
         }
 
         private generateNumAxisPosition(
@@ -31,7 +37,7 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: 
         private getAxisPosition(
             plot: AxisType, data: SingleAxisData<AXIS_TYPE>, axis: AXIS
         ): number {
-            if (Array.isArray(data)) {
+            if (Array.isArray(data) && typeof plot === 'string') {
                 return this.generateStringAxisPosition(plot, data, axis);
             } else {
                 return this.generateNumAxisPosition(plot, data, axis);
