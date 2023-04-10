@@ -5,6 +5,8 @@ export type Axis<T, U> = {
     y: U;
 };
 
+export type NUM_AXIS_TYPE = Exclude<AXIS_TYPE, AXIS_TYPE.STRING>;
+
 export type SingleAxisData<T extends AXIS_TYPE> = 
 T extends AXIS_TYPE.STRING ? Array<string> : { 
     begin: number,
@@ -16,6 +18,6 @@ T extends AXIS_TYPE.STRING ? Array<string> : {
 export type AxisData<T extends AXIS_TYPE, U extends AXIS_TYPE> = 
     Axis<SingleAxisData<T>, SingleAxisData<U>>;
 
-export type AxisType = number | string | Date;
+export type AxisType = number | string;
 
 export type PlotData = Array<Axis<AxisType, AxisType>>;

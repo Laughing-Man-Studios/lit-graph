@@ -1,12 +1,11 @@
 import { LitElement, nothing, svg, css, TemplateResult } from 'lit';
-import { Axis, AxisData, SingleAxisData } from '../types';
+import { AxisData, NUM_AXIS_TYPE, SingleAxisData } from '../types';
 import { AXIS, AXIS_TYPE, GRAPH } from '../constants';
 import { state } from 'lit/decorators.js';
 import { ref, createRef } from 'lit/directives/ref.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T = {}> = new (...args: any[]) => T;
-type DateNum = AXIS_TYPE.DATE | AXIS_TYPE.NUMBER;
 type LabelRenderer = (val: number) => string | TemplateResult;
 type LineElements = Array<TemplateResult>;
 type LabelsArr = SVGTextElement[];
@@ -117,7 +116,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                 return (val: number) => new Date(val).toLocaleDateString();
             }
         }
-        private generateDateNumLabels(data: SingleAxisData<DateNum>, 
+        private generateDateNumLabels(data: SingleAxisData<NUM_AXIS_TYPE>, 
             lineElements: LineElements): void {
             const labelRenderer = this.generateLabelRenderer(data.type, data.interval);
             
