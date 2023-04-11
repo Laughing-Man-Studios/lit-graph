@@ -1,9 +1,10 @@
-import { LitElement, svg } from 'lit';
+import { LitElement, svg, TemplateResult } from 'lit';
 import { AXIS, AXIS_TYPE, GRAPH } from '../constants';
 import { PlotData, Axis, AxisType, AxisData, SingleAxisData, NUM_AXIS_TYPE } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T = {}> = new (...args: any[]) => T;
+type RenderElements = { circles: Array<TemplateResult>, lines: Array<TemplateResult> };
 
 export declare class LitLinePlotInterface {
     renderLinePlot(data: PlotData, axisData: AxisData<AXIS_TYPE, AXIS_TYPE>): unknown;
@@ -56,23 +57,40 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: 
             return this.generateNumAxisPosition(plot, data, axis);
         }
 
-        private getPosition(
-            plot: Axis<AxisType, AxisType>, 
-            axisData: AxisData<AXIS_TYPE, AXIS_TYPE> ): Axis<number, number> {
-            
-                return {
-                    x: this.getAxisPosition(plot.x, axisData.x, AXIS.X),
-                    y: this.getAxisPosition(plot.y, axisData.y, AXIS.Y)
-                };
+        private getElements(
+            data: PlotData, 
+            axisData: AxisData<AXIS_TYPE, AXIS_TYPE> ): RenderElements {
+                const renderElements: RenderElements = { circles: [], lines: []};
+                let prev: { x: number, y: number} | null = null;
+
+                for (let i = 0; i < data.length; i++) {
+                    const current = data[i];
+                    const x = this.getAxisPosition(current.x, axisData.x, AXIS.X);
+                    const y = this.getAxisPosition(current.y, axisData.y, AXIS.Y);
+
+                    renderElements.circles.push(svg`<circle cx="${x}" cy="${y}" />`);
+
+                    if (prev) {
+                        renderElements.lines.push(svg`
+                            <line x1="${prev.x}" y1="${prev.y}" x2="${x}" y2="${y}" />
+                        `);
+                    }
+
+                    prev = { x, y };
+                }
+
+                return renderElements;
         }
 
         renderLinePlot(data: PlotData, axisData: AxisData<AXIS_TYPE, AXIS_TYPE>) {
+            const { circles, lines } = this.getElements(data, axisData);
+            
             return (svg`
-                <g>
-                    ${data.map((plot) => {
-                        const { x, y } = this.getPosition(plot, axisData);
-                        return (svg`<circle cx="${x}" cy="${y}" r="2">`);
-                    })}
+                <g id="PlotCircles">
+                    ${circles}
+                </g>
+                <g id="PlotLines">
+                    ${lines}
                 </g>
             `);
         }
