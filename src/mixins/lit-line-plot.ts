@@ -1,6 +1,6 @@
-import { LitElement, svg, TemplateResult } from 'lit';
+import { css, LitElement, svg, TemplateResult } from 'lit';
 import { AXIS, AXIS_TYPE, GRAPH } from '../constants';
-import { PlotData, Axis, AxisType, AxisData, SingleAxisData, NUM_AXIS_TYPE } from '../types';
+import { PlotData, AxisType, AxisData, SingleAxisData, NUM_AXIS_TYPE } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T = {}> = new (...args: any[]) => T;
@@ -12,6 +12,16 @@ export declare class LitLinePlotInterface {
 
 export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: T) => {
     class LitLinePlotClass extends superClass {
+
+        static styles = (css`
+            #PlotCircles circle {
+                r: 1.5;
+            }
+
+            #PlotLines line {
+                stroke: black;
+            }
+        `);
 
         private generateStringAxisPosition(
             plot: string, data: SingleAxisData<AXIS_TYPE.STRING>, axis: AXIS
