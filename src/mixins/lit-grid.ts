@@ -5,7 +5,7 @@ import { Axis } from '../types';
 type Constructor<T = {}> = new (...args: any[]) => T;
 
 export declare class LitGridInterface {
-    renderGrid(axisLengths?: Axis<number>): unknown;
+    renderGrid(axisLengths?: Axis<number, number>): unknown;
 }
 
 export const LitGridMixin = <T extends Constructor<LitElement>>(superClass: T) => {
@@ -39,7 +39,7 @@ export const LitGridMixin = <T extends Constructor<LitElement>>(superClass: T) =
             return lineElements;
         }
 
-        renderGrid(axisLengths: Axis<number> = { x: 10, y: 10 }) {
+        renderGrid(axisLengths: Axis<number, number> = { x: 10, y: 10 }) {
             const { x, y } = axisLengths;
             return svg`
                 ${this.renderXAxisLines(x)}

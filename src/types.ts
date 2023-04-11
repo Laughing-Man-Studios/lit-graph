@@ -1,11 +1,13 @@
-import { AXIS, AXIS_TYPE } from './constants';
+import { AXIS_TYPE } from './constants';
 
-export type Axis<T> = { 
+export type Axis<T, U> = { 
     x: T;
-    y: T;
+    y: U;
 };
 
-export type AxisData<T extends AXIS_TYPE> = 
+export type NUM_AXIS_TYPE = Exclude<AXIS_TYPE, AXIS_TYPE.STRING>;
+
+export type SingleAxisData<T extends AXIS_TYPE> = 
 T extends AXIS_TYPE.STRING ? Array<string> : { 
     begin: number,
     end: number,
@@ -13,12 +15,9 @@ T extends AXIS_TYPE.STRING ? Array<string> : {
     type: T
 };
 
-type SingleAxisCoords = {
-    START: number;
-    END: number;
-};
+export type AxisData<T extends AXIS_TYPE, U extends AXIS_TYPE> = 
+    Axis<SingleAxisData<T>, SingleAxisData<U>>;
 
-export type AxisCoords = {
-    [AXIS.X]: SingleAxisCoords;
-    [AXIS.Y]: SingleAxisCoords;
-};
+export type AxisType = number | string;
+
+export type PlotData = Array<Axis<AxisType, AxisType>>;
