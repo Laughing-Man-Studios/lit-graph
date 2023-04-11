@@ -3,7 +3,7 @@ import { html, LitElement } from 'lit';
 import { timeout } from '../helpers';
 import { AXIS_TYPE } from '../../constants';
 import { LitAxisMixin } from '../../mixins/lit-axis';
-import { AxisData } from '../../types';
+import {  SingleAxisData } from '../../types';
 import { ref, createRef } from 'lit/directives/ref.js';
 
 const expects = {
@@ -27,11 +27,11 @@ function testDefaultLabels(label: Element, index: number) {
     assert.equal(Number(label.textContent), expects.default[index], 'Label text wrong');
 }
 
-function testDateLabels(label, index) {
+function testDateLabels(label: Element, index: number) {
     const tspans = label.querySelectorAll('tspan');
     assert.equal(tspans.length, 2, 'Inner TSpans did not render');
-    assert.equal(tspans[0].textContent.trim(), expects.dates[index][0], 'First TSpan text wrong');
-    assert.equal(tspans[1].textContent.trim(), expects.dates[index][1], 'Second TSpan text wrong');
+    assert.equal(tspans[0]?.textContent?.trim(), expects.dates[index][0], '1st TSpan text wrong');
+    assert.equal(tspans[1]?.textContent?.trim(), expects.dates[index][1], '2nd TSpan text wrong');
 }
 
 class Numbers extends LitAxisMixin(LitElement) {
@@ -73,7 +73,7 @@ class Dates extends LitAxisMixin(LitElement) {
             end,
             interval: (end - begin) / 10,
             type: AXIS_TYPE.DATE
-        } as AxisData<AXIS_TYPE.DATE>;
+        } as SingleAxisData<AXIS_TYPE.DATE>;
         const payload = {
             y: axis,
             x: axis
