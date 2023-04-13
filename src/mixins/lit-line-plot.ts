@@ -41,7 +41,7 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: 
             plot: number, data: SingleAxisData<NUM_AXIS_TYPE>, axis: AXIS
         ): number {
             const { START, END } = GRAPH[axis];
-            const position = (END - START) *  plot / (data.end - data.begin);
+            const position = (END - START) *  (plot - data.begin) / (data.end - data.begin);
 
             if (axis === AXIS.Y) {
                 return END - position;

@@ -36,6 +36,32 @@ class Numbers extends LitLinePlotMixin(LitElement) {
 }
 customElements.define('test-numbers', Numbers);
 
+class Dates extends LitLinePlotMixin(LitElement) {
+    private plot = [
+        { x: 1618162213000, y: 1618162213000 },
+        { x: 1649698213000, y: 1649698213000 },
+        { x: 1681234213000, y: 1681234213000 }
+         
+    ];
+    private interval = (this.plot[0].x - this.plot[2].x) / 5;
+    private axisData = {
+        x: {begin: 1618162213000, end: 1681234213000, interval: this.interval, type: 'date'},
+        y: {begin: 1618162213000, end: 1681234213000, interval: this.interval, type: 'date'}
+    } as AxisData<AXIS_TYPE.DATE, AXIS_TYPE.DATE>;
+
+    override render() {
+        return (html`
+            <svg
+                height="300px"
+                width="300px"
+                viewBox="0 0 150 150">
+                    ${this.renderLinePlot(this.plot, this.axisData)}
+            </svg>
+        `);
+    }
+}
+customElements.define('test-dates', Dates);
+
 suite('lit-line-plot mixin', ()=> {
     
     test('is defined', () => {
@@ -51,5 +77,14 @@ suite('lit-line-plot mixin', ()=> {
 
         assert.lengthOf(plotPoints, 10, 'Expected number of plot points to equal 10');
         assert.lengthOf(plotLines, 9, 'Expected number of line points to equal 9');
+    });
+
+    test('renders with dates', async () => {
+        const el: LitElement = await fixture(html`<test-dates></test-dates>`);
+        const plotPoints = el.renderRoot.querySelectorAll('circle');
+        const plotLines = el.renderRoot.querySelectorAll('line');
+
+        assert.lengthOf(plotPoints, 3, 'Expected number of plot points to equal 3');
+        assert.lengthOf(plotLines, 2, 'Expected number of line points to equal 2');
     });
 });
