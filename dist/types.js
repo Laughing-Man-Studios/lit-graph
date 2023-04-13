@@ -1,2 +1,2 @@
-import { AXIS } from './constants';
+export {};
 //# sourceMappingURL=types.js.map

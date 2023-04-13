@@ -142,9 +142,8 @@ export const LitAxisMixin = (superClass) => {
         }
         updateMeasurementLabels(axis) {
             var _a;
-            const graphAxisCoords = (this === null || this === void 0 ? void 0 : this.graph) || null;
             const isYAxis = axis === AXIS.Y;
-            const END = graphAxisCoords ? graphAxisCoords[axis].END : GRAPH[axis].END;
+            const { END } = GRAPH[axis];
             const labels = (_a = this.labels[axis].value) === null || _a === void 0 ? void 0 : _a.querySelectorAll('text');
             if (labels === null || labels === void 0 ? void 0 : labels[Symbol.iterator]) {
                 const labelsArr = Array.from(labels);
