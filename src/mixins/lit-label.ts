@@ -1,21 +1,35 @@
-import { LitElement, svg } from 'lit';
+import { css,  LitElement, svg } from 'lit';
 import { Axis } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T = {}> = new (...args: any[]) => T;
 
 export declare class LitLabelInterface {
-    renderLabel(axisLabels: Axis<string, string>): unknown;
+    renderLabels(axisLabels: Axis<string, string>): unknown;
 }
 
 export const LitLabelMixin = <T extends Constructor<LitElement>>(superClass: T) => {
     class LitLabelClass extends superClass {
-        renderLabel(axisLabels: Axis<string, string>) {
+
+        static styles = (css` 
+            #labels text  {
+                x: 100%;
+                y: 100%;
+            }
+
+            #labels text.y {
+                transform: rotate(90deg);
+            }
+        `);
+
+        renderLabels(axisLabels: Axis<string, string>) {
             const { x, y } = axisLabels;
 
             return (svg`
-                <text>${x}</text>
-                <text>${y}</text>
+                <g id="labels">
+                    <text class="x">${x}</text>
+                    <text class="y">${y}</text>
+                <g>
             `);
         }
     }
