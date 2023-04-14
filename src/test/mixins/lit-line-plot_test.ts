@@ -63,7 +63,6 @@ class Dates extends LitLinePlotMixin(LitElement) {
 customElements.define('test-dates', Dates);
 
 suite('lit-line-plot mixin', ()=> {
-    
     test('is defined', () => {
         const el = document.createElement('test-numbers');
         assert.instanceOf(el, Numbers);
