@@ -24,7 +24,7 @@ customElements.define('test-labels', Labels);
 
 suite('lit-label mixin', () => {
     test('is defined', ()=> {
-        const el = document.createElement('test-label');
+        const el = document.createElement('test-labels');
         assert.instanceOf(el, Labels);
         assert.exists((el as Labels).renderLabels);
     });
@@ -34,7 +34,7 @@ suite('lit-label mixin', () => {
         const xLabel = el.renderRoot.querySelector('#labels .x');
         const yLabel = el.renderRoot.querySelector('#labels .y');
 
-        assert.equal(xLabel?.innerHTML, axisLabels.x);
-        assert.equal(yLabel?.innerHTML, axisLabels.y);
+        assert.equal(xLabel?.textContent, axisLabels.x);
+        assert.equal(yLabel?.textContent, axisLabels.y);
     });
 });
