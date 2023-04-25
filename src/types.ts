@@ -1,32 +1,23 @@
-export type Axis = 'y' | 'x';
+import { AXIS_TYPE } from './constants';
 
-// Different ways the data can look like
-type StrStr = {x: String, y: String};
-type StrNum = {x: String, y: number};
-type StrDate = {x: String, y: Date};
-type DateStr = {x: Date, y: String};
-type DateNum = {x: Date, y: number};
-type DateDate = {x: Date, y: Date};
-type NumStr = {x: number, y: String};
-type NumNum = {x: number, y: number};
-type NumDate = {x: number, y: Date};
+export type Axis<T, U> = { 
+    x: T;
+    y: U;
+};
 
-export type Data = Array<StrStr> |
-    Array<StrNum> |
-    Array<StrDate> |
-    Array<DateStr> |
-    Array<DateNum> |
-    Array<DateDate> |
-    Array<NumStr> |
-    Array<NumNum> |
-    Array<NumDate>; 
+export type NUM_AXIS_TYPE = Exclude<AXIS_TYPE, AXIS_TYPE.STRING>;
 
-export type AxisData = Array<String> |
-    Array<number> |
-    Array<Date>;
+export type SingleAxisData<T extends AXIS_TYPE> = 
+T extends AXIS_TYPE.STRING ? Array<string> : { 
+    begin: number,
+    end: number,
+    interval: number,
+    type: T
+};
 
-export type AxisLengths = {
-    y: number;
-    x: number;
-}
+export type AxisData<T extends AXIS_TYPE, U extends AXIS_TYPE> = 
+    Axis<SingleAxisData<T>, SingleAxisData<U>>;
 
+export type AxisType = number | string;
+
+export type PlotData = Array<Axis<AxisType, AxisType>>;

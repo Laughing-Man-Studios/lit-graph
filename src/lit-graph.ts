@@ -1,9 +1,6 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-import { axisLengths, getAxisData } from './helpers/axis';
 import { LitGridMixin } from'./mixins/lit-grid';
-import { AxisLengths, Data } from './types';
-import { xAxisWindowSize, yAxisWindowSize } from './constants';
 /**
  * Lit Graph Component.
  *
@@ -24,14 +21,20 @@ export default class LitGraph extends LitGridMixin(LitElement) {
   /**
    * The data to graph.
    */
-  @property({ type: Array })
-  data: Data = [{ x: 1, y: 1 }];
+  @property()
+  declare name: string;
 
   /**
    * The Y axis label
    */
-  @property({ attribute: 'y-label'})
-  yLabel = 'Y Axis Label';
+  @property({type: Number})
+  declare count: number;
+
+  constructor() {
+    super();
+    this.name = "World";
+    this.count = 0;
+  }
 
   /**
    * The X axis label
@@ -39,28 +42,11 @@ export default class LitGraph extends LitGridMixin(LitElement) {
   @property({ attribute: 'x-label'})
   xLabel = 'x Axis Label';
 
-  private getAxisLengths(): AxisLengths {
-    const yAxisData = getAxisData('y', this.data);
-    const xAxisData = getAxisData('x', this.data);
-
-    if (yAxisData === null || xAxisData === null) {
-      throw new Error('Could not get the data set for 1 or more axis');
-    }
-
-    const x = axisLengths(xAxisData);
-    const y = axisLengths(yAxisData);
-    
-    if (y === null || x === null) {
-      throw new Error('Could not get the axis length for 1 or more axis');
-    }
-
-    return { x, y };
-  }
 
   override render() {
     return html`
-      <svg viewBox="0 0 ${xAxisWindowSize} ${yAxisWindowSize}">
-        ${this.renderGrid(this.getAxisLengths())}
+      <svg viewBox="0 0 150 150">
+        ${this.renderGrid()}
       </svg>
     `;
   }
