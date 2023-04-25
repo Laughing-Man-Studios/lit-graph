@@ -12,13 +12,10 @@ export const LitLabelMixin = <T extends Constructor<LitElement>>(superClass: T) 
     class LitLabelClass extends superClass {
 
         static styles = (css` 
-            #labels text  {
-                x: 100%;
-                y: 100%;
-            }
-
             #labels text.y {
-                transform: rotate(90deg);
+                transform-box: fill-box;
+	            transform: rotate(-90deg);
+	            transform-origin: center;
             }
         `);
 
@@ -27,8 +24,8 @@ export const LitLabelMixin = <T extends Constructor<LitElement>>(superClass: T) 
 
             return (svg`
                 <g id="labels">
-                    <text class="x">${x}</text>
-                    <text class="y">${y}</text>
+                    <text class="x" x="50%" y="100%">${x}</text>
+                    <text class="y" y="50%">${y}</text>
                 <g>
             `);
         }
