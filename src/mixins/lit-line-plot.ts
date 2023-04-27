@@ -7,7 +7,7 @@ type Constructor<T = {}> = new (...args: any[]) => T;
 type RenderElements = { circles: Array<TemplateResult>, lines: Array<TemplateResult> };
 
 export declare class LitLinePlotInterface {
-    renderLinePlot(data: PlotData, axisData: AxisData<AXIS_TYPE, AXIS_TYPE>): unknown;
+    renderLinePlot(data: PlotData, axisData: AxisData): unknown;
 }
 
 export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: T) => {
@@ -69,7 +69,7 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: 
 
         private getElements(
             data: PlotData, 
-            axisData: AxisData<AXIS_TYPE, AXIS_TYPE> ): RenderElements {
+            axisData: AxisData ): RenderElements {
                 const renderElements: RenderElements = { circles: [], lines: []};
                 let prev: { x: number, y: number} | null = null;
 
@@ -92,7 +92,7 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: 
                 return renderElements;
         }
 
-        renderLinePlot(data: PlotData, axisData: AxisData<AXIS_TYPE, AXIS_TYPE>) {
+        renderLinePlot(data: PlotData, axisData: AxisData) {
             const { circles, lines } = this.getElements(data, axisData);
             
             return (svg`

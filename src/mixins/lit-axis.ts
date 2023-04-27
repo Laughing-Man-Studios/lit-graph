@@ -11,7 +11,7 @@ type LineElements = Array<TemplateResult>;
 type LabelsArr = SVGTextElement[];
 
 export declare class LitAxisInterface {
-    renderAxis(axisData?: AxisData<AXIS_TYPE, AXIS_TYPE>): unknown;
+    renderAxis(axisData?: AxisData): unknown;
 }
 
 const CONSTANTS = {
@@ -25,7 +25,7 @@ const CONSTANTS = {
 const defaults = {
     x: { begin: 0, end: 9, interval: 1, type: 'number' },
     y: { begin: 0, end: 9, interval: 1, type: 'number' }
-} as AxisData<AXIS_TYPE.NUMBER, AXIS_TYPE.NUMBER>;
+} as AxisData;
 
 export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) => {
     class LitAxisClass extends superClass {
@@ -219,7 +219,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
         }
 
         renderAxis(
-            axisData: AxisData<AXIS_TYPE, AXIS_TYPE> = defaults
+            axisData: AxisData = defaults
             ): TemplateResult {
             const { x, y } = axisData;
 
