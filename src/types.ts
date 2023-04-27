@@ -15,8 +15,8 @@ T extends AXIS_TYPE.STRING ? Array<string> : {
     type: T
 };
 
-export type AxisData<T extends AXIS_TYPE, U extends AXIS_TYPE> = 
-    Axis<SingleAxisData<T>, SingleAxisData<U>>;
+export type AxisData = 
+    Axis<SingleAxisData<AXIS_TYPE>, SingleAxisData<AXIS_TYPE>>;
 
 export type AxisType = number | string;
 
