@@ -3,7 +3,7 @@ import { html, LitElement } from 'lit';
 import { timeout } from '../helpers';
 import { AXIS_TYPE } from '../../constants';
 import { LitAxisMixin } from '../../mixins/lit-axis';
-import {  SingleAxisData } from '../../types';
+import { AxisMeta } from '../../types';
 import { ref, createRef } from 'lit/directives/ref.js';
 
 const expects = {
@@ -73,7 +73,7 @@ class Dates extends LitAxisMixin(LitElement) {
             end,
             interval: (end - begin) / 10,
             type: AXIS_TYPE.DATE
-        } as SingleAxisData<AXIS_TYPE.DATE>;
+        } as AxisMeta<AXIS_TYPE.DATE>;
         const payload = {
             y: axis,
             x: axis

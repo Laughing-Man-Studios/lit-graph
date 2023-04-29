@@ -1,13 +1,13 @@
 import { css, LitElement, svg, TemplateResult } from 'lit';
 import { AXIS, AXIS_TYPE, GRAPH } from '../constants';
-import { PlotData, AxisType, AxisData, SingleAxisData, NUM_AXIS_TYPE } from '../types';
+import { PlotData, AxisType, GraphMeta, AxisMeta, NUM_AXIS_TYPE } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T = {}> = new (...args: any[]) => T;
 type RenderElements = { circles: Array<TemplateResult>, lines: Array<TemplateResult> };
 
 export declare class LitLinePlotInterface {
-    renderLinePlot(data: PlotData, axisData: AxisData): unknown;
+    renderLinePlot(data: PlotData, axisData: GraphMeta): unknown;
 }
 
 export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: T) => {
@@ -24,7 +24,7 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: 
         `);
 
         private generateStringAxisPosition(
-            plot: string, data: SingleAxisData<AXIS_TYPE.STRING>, axis: AXIS
+            plot: string, data: AxisMeta<AXIS_TYPE.STRING>, axis: AXIS
         ): number {
             const { START, END } = GRAPH[axis];
 
@@ -38,7 +38,7 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: 
         }
 
         private generateNumAxisPosition(
-            plot: number, data: SingleAxisData<NUM_AXIS_TYPE>, axis: AXIS
+            plot: number, data: AxisMeta<NUM_AXIS_TYPE>, axis: AXIS
         ): number {
             const { START, END } = GRAPH[axis];
             const position = (END - START) *  (plot - data.begin) / (data.end - data.begin);
@@ -51,7 +51,7 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: 
         }
 
         private getAxisPosition(
-            plot: AxisType, data: SingleAxisData<AXIS_TYPE>, axis: AXIS
+            plot: AxisType, data: AxisMeta<AXIS_TYPE>, axis: AXIS
         ): number {
             if (Array.isArray(data)) {
                 if (typeof plot === 'string') {
@@ -69,7 +69,7 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: 
 
         private getElements(
             data: PlotData, 
-            axisData: AxisData ): RenderElements {
+            axisData: GraphMeta ): RenderElements {
                 const renderElements: RenderElements = { circles: [], lines: []};
                 let prev: { x: number, y: number} | null = null;
 
@@ -92,7 +92,7 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: 
                 return renderElements;
         }
 
-        renderLinePlot(data: PlotData, axisData: AxisData) {
+        renderLinePlot(data: PlotData, axisData: GraphMeta) {
             const { circles, lines } = this.getElements(data, axisData);
             
             return (svg`

@@ -1,5 +1,5 @@
-import { LitElement, nothing, svg, css, TemplateResult } from 'lit';
-import { AxisData, NUM_AXIS_TYPE, SingleAxisData } from '../types';
+import { LitElement, nothing, svg, css, TemplateResult, PropertyValues } from 'lit';
+import { GraphMeta, NUM_AXIS_TYPE, AxisMeta } from '../types';
 import { AXIS, AXIS_TYPE, GRAPH } from '../constants';
 import { state } from 'lit/decorators.js';
 import { ref, createRef } from 'lit/directives/ref.js';
@@ -11,7 +11,7 @@ type LineElements = Array<TemplateResult>;
 type LabelsArr = SVGTextElement[];
 
 export declare class LitAxisInterface {
-    renderAxis(axisData?: AxisData): unknown;
+    renderAxis(axisData?: GraphMeta): unknown;
 }
 
 const CONSTANTS = {
@@ -25,7 +25,7 @@ const CONSTANTS = {
 const defaults = {
     x: { begin: 0, end: 9, interval: 1, type: 'number' },
     y: { begin: 0, end: 9, interval: 1, type: 'number' }
-} as AxisData;
+} as GraphMeta;
 
 export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) => {
     class LitAxisClass extends superClass {
@@ -75,7 +75,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
             `);
         }
 
-        private generateLabels(data: SingleAxisData<AXIS_TYPE>, lineElements: LineElements){
+        private generateLabels(data: AxisMeta<AXIS_TYPE>, lineElements: LineElements){
             if (Array.isArray(data)) {
                 this.generateStrLabels(data, lineElements);
             } else {
@@ -116,7 +116,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                 return (val: number) => new Date(val).toLocaleDateString();
             }
         }
-        private generateDateNumLabels(data: SingleAxisData<NUM_AXIS_TYPE>, 
+        private generateDateNumLabels(data: AxisMeta<NUM_AXIS_TYPE>, 
             lineElements: LineElements): void {
             const labelRenderer = this.generateLabelRenderer(data.type, data.interval);
             
@@ -210,7 +210,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
             
         }
 
-        private generateAxis(data: SingleAxisData<AXIS_TYPE>, axis: AXIS): LineElements {
+        private generateAxis(data: AxisMeta<AXIS_TYPE>, axis: AXIS): LineElements {
             const lineElements: LineElements = []; 
             this.generateLine(axis, lineElements);
             this.generateLabels(data, lineElements);
@@ -219,7 +219,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
         }
 
         renderAxis(
-            axisData: AxisData = defaults
+            axisData: GraphMeta = defaults
             ): TemplateResult {
             const { x, y } = axisData;
 

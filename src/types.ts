@@ -7,7 +7,7 @@ export type Axis<T, U> = {
 
 export type NUM_AXIS_TYPE = Exclude<AXIS_TYPE, AXIS_TYPE.STRING>;
 
-export type SingleAxisData<T extends AXIS_TYPE> = 
+export type AxisMeta<T extends AXIS_TYPE> = 
 T extends AXIS_TYPE.STRING ? Array<string> : { 
     begin: number,
     end: number,
@@ -15,8 +15,8 @@ T extends AXIS_TYPE.STRING ? Array<string> : {
     type: T
 };
 
-export type AxisData = 
-    Axis<SingleAxisData<AXIS_TYPE>, SingleAxisData<AXIS_TYPE>>;
+export type GraphMeta = 
+    Axis<AxisMeta<AXIS_TYPE>, AxisMeta<AXIS_TYPE>>;
 
 export type AxisType = number | string;
 

@@ -5,7 +5,7 @@ import { LitAxisMixin } from './mixins/lit-axis';
 import { LitGridMixin } from'./mixins/lit-grid';
 import { LitLabelMixin } from './mixins/lit-label';
 import { LitLinePlotMixin } from './mixins/lit-line-plot';
-import { Axis, AxisData, AxisType, PlotData, SingleAxisData } from './types';
+import { Axis, GraphMeta, AxisType, PlotData, AxisMeta } from './types';
 
 function isValidDate(dateStr: string) {
   const date = Date.parse(dateStr);
@@ -13,7 +13,8 @@ function isValidDate(dateStr: string) {
 }
 const defaultSingleAxisData = { begin: 0, end: 0, interval: 0 };
 const Mixin = LitAxisMixin(LitGridMixin(LitLabelMixin(LitLinePlotMixin(LitElement))));
-type SinglePlot = Axis<AxisType, AxisType>;
+type PlotPnt = Axis<AxisType, AxisType>;
+
 /**
  * Lit Graph Component.
  *
@@ -59,22 +60,22 @@ export default class LitGraph extends Mixin {
     throw new Error(`Point ${singleAxisPoint} has a bad data type`);
   }
 
-  checkDataIntegrity({ x: currX, y: currY }: SinglePlot, data: PlotData): void {
-    const { x: firstX, y: firstY } = data[0];
-    const currXType = this.getAxisType(currX);
-    const currYType = this.getAxisType(currY);
-    const firstXType = this.getAxisType(firstX);
-    const firstYType = this.getAxisType(firstY);
+    private checkDataIntegrity({ x: currX, y: currY }: PlotPnt, data: PlotData): void {
+        const { x: firstX, y: firstY } = data[0];
+        const currXType = this.getAxisType(currX);
+        const currYType = this.getAxisType(currY);
+        const firstXType = this.getAxisType(firstX);
+        const firstYType = this.getAxisType(firstY);
 
     if (currXType !== firstXType || currYType !== firstYType) {
       throw new Error('Data contains mismatching types');
     }
   }
 
-  getSingleAxisDataStruct(axisType: AXIS_TYPE): SingleAxisData<AXIS_TYPE> {
-    switch(axisType) {
-      case AXIS_TYPE.DATE:
-        return {
+    private getSingleAxisDataStruct(axisType: AXIS_TYPE): AxisMeta<AXIS_TYPE> {
+        switch (axisType) {
+            case AXIS_TYPE.DATE:
+                return {
           ... defaultSingleAxisData,
           type: AXIS_TYPE.DATE
         };
@@ -90,10 +91,9 @@ export default class LitGraph extends Mixin {
     }
   }
 
-  fillSingleAxisData(data: SingleAxisData<AXIS_TYPE>, point: AxisType): SingleAxisData<AXIS_TYPE> {
-    
-    if (typeof point === 'string') {
-      if (Array.isArray(data)) {
+    private fillAxisMeta(data: AxisMeta<AXIS_TYPE>, axisPnt: AxisType): AxisMeta<AXIS_TYPE> {
+        if (typeof axisPnt === 'string') {
+            if (Array.isArray(data)) {
         data.push(point);
       } else if (!Array.isArray(data) && data.type === AXIS_TYPE.DATE) {
         const date = Date.parse(point);
@@ -111,19 +111,19 @@ export default class LitGraph extends Mixin {
     return data;
   }
 
-  fillAxisData(axisData: AxisData, point: SinglePlot, _:number, data: PlotData): AxisData {
-    this.checkDataIntegrity(point, data);
+    private fillGraphMeta = (axisData: GraphMeta, point: PlotPnt, _: number, data: PlotData) => {
+        this.checkDataIntegrity(point, data);
     axisData.x = this.fillSingleAxisData(axisData.x, point.x);
     axisData.y = this.fillSingleAxisData(axisData.y, point.y);
 
     return axisData;
   }
 
-  getAxisData(data: PlotData): AxisData {
-    const axisTypes: Axis<AXIS_TYPE, AXIS_TYPE> = {
-      [AXIS.X]: this.getAxisType(data[0].x),
-      [AXIS.Y]: this.getAxisType(data[0].y)  
-    };
+    private getGraphMeta(data: PlotData): GraphMeta {
+        const axisTypes: Axis<AXIS_TYPE, AXIS_TYPE> = {
+            [AXIS.X]: this.getAxisType(data[0].x),
+            [AXIS.Y]: this.getAxisType(data[0].y)
+        };
 
     const axisData = {
       x: this.getSingleAxisDataStruct(axisTypes[AXIS.X]),
@@ -137,7 +137,7 @@ export default class LitGraph extends Mixin {
     if (!this.data) {
       throw new Error('No data was passed to Lit-Graph');
     } 
-    const axisData = this.getAxisData(this.data);
+        const graphMeta = this.getGraphMeta(this.data);
 
 
     return html`
