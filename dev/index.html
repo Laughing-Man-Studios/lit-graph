@@ -6,10 +6,15 @@
     <title>Lit Graph Demo</title>
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
     <script src="../node_modules/lit/polyfill-support.js"></script>
-    <script type="module" src="../dist/lit-graph.js"></script>
+    <script type="module" src="../src/lit-graph.ts"></script>
   </head>
   <body>
     <h1>Lit Graph Demo</h1>
-    <lit-graph style="height: 600px; width: 600px; display: block;"/>
+    <lit-graph 
+      style="height: 300px; width: 300px; display: block;"
+      x-label="X Label Test"
+      y-label="Y Label Test"
+      data='[{"x":1,"y":1},{"x":2,"y":2},{"x":3,"y":3},{"x":4,"y":4},{"x":5,"y":5}]'
+    />
   </body>
 </html>

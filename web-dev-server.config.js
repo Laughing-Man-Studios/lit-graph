@@ -1,4 +1,5 @@
 import {legacyPlugin} from '@web/dev-server-legacy';
+import { esbuildPlugin } from '@web/dev-server-esbuild';
 
 const mode = process.env.MODE || 'dev';
 if (!['dev', 'prod'].includes(mode)) {
@@ -15,5 +16,9 @@ export default {
         webcomponents: false,
       },
     }),
-  ],
+    esbuildPlugin({ 
+      ts: true, 
+      target: 'auto' 
+    })
+  ]
 };
