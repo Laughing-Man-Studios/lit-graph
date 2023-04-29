@@ -1,15 +1,16 @@
-import {LitElement, html, css} from 'lit';
-import {customElement, property } from 'lit/decorators.js';
-import { AXIS, AXIS_TYPE } from './constants';
+import { LitElement, html, PropertyValues } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { ref, createRef } from 'lit/directives/ref.js';
+import { AXIS, AXIS_LABEL_LIMIT, AXIS_TYPE } from './constants';
 import { LitAxisMixin } from './mixins/lit-axis';
-import { LitGridMixin } from'./mixins/lit-grid';
+import { LitGridMixin } from './mixins/lit-grid';
 import { LitLabelMixin } from './mixins/lit-label';
 import { LitLinePlotMixin } from './mixins/lit-line-plot';
 import { Axis, GraphMeta, AxisType, PlotData, AxisMeta } from './types';
 
 function isValidDate(dateStr: string) {
-  const date = Date.parse(dateStr);
-  return !isNaN(date);
+    const date = Date.parse(dateStr);
+    return !isNaN(date);
 }
 const defaultSingleAxisData = { begin: 0, end: 0, interval: 0 };
 const Mixin = LitAxisMixin(LitGridMixin(LitLabelMixin(LitLinePlotMixin(LitElement))));
@@ -25,13 +26,6 @@ type PlotPnt = Axis<AxisType, AxisType>;
  */
 @customElement('lit-graph')
 export default class LitGraph extends Mixin {
-  static override styles = css`
-    :host {
-      height: 100%;
-      width: 100%;
-    }
-  `;
-
     /**
      * The X axis label
      */
@@ -67,10 +61,10 @@ export default class LitGraph extends Mixin {
                 return AXIS_TYPE.STRING;
             }
         } else if (typeof singleAxisPoint === 'number') {
-      AXIS_TYPE.NUMBER;
+            return AXIS_TYPE.NUMBER;
+        }
+        throw new Error(`Point ${singleAxisPoint} has a bad data type`);
     }
-    throw new Error(`Point ${singleAxisPoint} has a bad data type`);
-  }
 
     private checkDataIntegrity({ x: currX, y: currY }: PlotPnt, data: PlotData): void {
         const { x: firstX, y: firstY } = data[0];
@@ -79,39 +73,39 @@ export default class LitGraph extends Mixin {
         const firstXType = this.getAxisType(firstX);
         const firstYType = this.getAxisType(firstY);
 
-    if (currXType !== firstXType || currYType !== firstYType) {
-      throw new Error('Data contains mismatching types');
+        if (currXType !== firstXType || currYType !== firstYType) {
+            throw new Error('Data contains mismatching types');
+        }
     }
-  }
 
     private getSingleAxisDataStruct(axisType: AXIS_TYPE): AxisMeta<AXIS_TYPE> {
         switch (axisType) {
             case AXIS_TYPE.DATE:
                 return {
-          ... defaultSingleAxisData,
-          type: AXIS_TYPE.DATE
-        };
-      case AXIS_TYPE.STRING:
-        return [];
-      case AXIS_TYPE.NUMBER: 
-        return {
-          ... defaultSingleAxisData,
-          type: AXIS_TYPE.NUMBER
-        };
-      default:
-        throw new Error(`AxisType ${axisType} is not a valid AxisType`);
+                    ...defaultSingleAxisData,
+                    type: AXIS_TYPE.DATE
+                };
+            case AXIS_TYPE.STRING:
+                return [];
+            case AXIS_TYPE.NUMBER:
+                return {
+                    ...defaultSingleAxisData,
+                    type: AXIS_TYPE.NUMBER
+                };
+            default:
+                throw new Error(`AxisType ${axisType} is not a valid AxisType`);
+        }
     }
-  }
 
     private fillAxisMeta(data: AxisMeta<AXIS_TYPE>, axisPnt: AxisType): AxisMeta<AXIS_TYPE> {
         if (typeof axisPnt === 'string') {
             if (Array.isArray(data)) {
-        data.push(point);
-      } else if (!Array.isArray(data) && data.type === AXIS_TYPE.DATE) {
-        const date = Date.parse(point);
+                data.push(axisPnt);
+            } else if (!Array.isArray(data) && data.type === AXIS_TYPE.DATE) {
+                const date = Date.parse(axisPnt);
 
-        data.begin = data.begin === 0 || data.begin > date ? date : data.begin;
-        data.end = data.end === 0 || data.end < date ? date : data.end;
+                data.begin = data.begin === 0 || data.begin > date ? date : data.begin;
+                data.end = data.end === 0 || data.end < date ? date : data.end;
                 data.interval = Math.ceil((data.end - data.begin) / AXIS_LABEL_LIMIT);
             }
         } else if (typeof axisPnt === 'number' && !Array.isArray(data)) {
@@ -120,16 +114,16 @@ export default class LitGraph extends Mixin {
             data.interval = Math.ceil((data.end - data.begin) / AXIS_LABEL_LIMIT);
         }
 
-    return data;
-  }
+        return data;
+    }
 
     private fillGraphMeta = (axisData: GraphMeta, point: PlotPnt, _: number, data: PlotData) => {
         this.checkDataIntegrity(point, data);
-    axisData.x = this.fillSingleAxisData(axisData.x, point.x);
-    axisData.y = this.fillSingleAxisData(axisData.y, point.y);
+        axisData.x = this.fillAxisMeta(axisData.x, point.x);
+        axisData.y = this.fillAxisMeta(axisData.y, point.y);
 
-    return axisData;
-  }
+        return axisData;
+    };
 
     private getGraphMeta(data: PlotData): GraphMeta {
         const axisTypes: Axis<AXIS_TYPE, AXIS_TYPE> = {
@@ -137,10 +131,10 @@ export default class LitGraph extends Mixin {
             [AXIS.Y]: this.getAxisType(data[0].y)
         };
 
-    const axisData = {
-      x: this.getSingleAxisDataStruct(axisTypes[AXIS.X]),
-      y: this.getSingleAxisDataStruct(axisTypes[AXIS.Y])
-    };
+        const graphMeta = {
+            x: this.getSingleAxisDataStruct(axisTypes[AXIS.X]),
+            y: this.getSingleAxisDataStruct(axisTypes[AXIS.Y])
+        };
 
         return data.reduce(this.fillGraphMeta, graphMeta);
     }
@@ -159,26 +153,26 @@ export default class LitGraph extends Mixin {
         }
     }
 
-  override render() {
-    if (!this.data) {
-      throw new Error('No data was passed to Lit-Graph');
-    } 
+    override render() {
+        if (!this.data) {
+            throw new Error('No data was passed to Lit-Graph');
+        }
         const graphMeta = this.getGraphMeta(this.data);
 
 
-    return html`
+        return html`
       <svg viewBox="0 0 150 150" ${ref(this.svg)}>
         ${this.renderGrid()}
-        ${this.renderAxis(axisData)}
+        ${this.renderAxis(graphMeta)}
         ${this.renderLabels({ x: this.xLabel, y: this.yLabel })}
-        ${this.renderLinePlot(this.data, axisData)}
+        ${this.renderLinePlot(this.data, graphMeta)}
       </svg>
     `;
-  }
+    }
 }
 
 declare global {
-  interface HTMLElementTagNameMap {
-    'lit-graph': LitGraph;
-  }
+    interface HTMLElementTagNameMap {
+        'lit-graph': LitGraph;
+    }
 }
