@@ -13,15 +13,18 @@ export declare class LitLinePlotInterface {
 export const LitLinePlotMixin = <T extends Constructor<LitElement>>(superClass: T) => {
     class LitLinePlotClass extends superClass {
 
-        static styles = (css`
-            #PlotCircles circle {
-                r: 1.5;
-            }
+        static styles = [
+            (superClass as unknown as typeof LitElement).styles ?? [],
+            (css`
+                #PlotCircles circle {
+                    r: 1.5;
+                }
 
-            #PlotLines line {
-                stroke: black;
-            }
-        `);
+                #PlotLines line {
+                    stroke: black;
+                }
+            `)
+        ];
 
         private generateStringAxisPosition(
             plot: string, data: AxisMeta<AXIS_TYPE.STRING>, axis: AXIS

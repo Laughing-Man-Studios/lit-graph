@@ -30,18 +30,21 @@ const defaults = {
 export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) => {
     class LitAxisClass extends superClass {
 
-    static styles = (css`
-        text {
-            font-family: serif;
-        }
-        text.date,
-        text.string {
-            font-size: 4px;
-        }
-        text.number {
-            font-size: 6px;
-        }
-    `);
+        static styles = [
+            (superClass as unknown as typeof LitElement).styles ?? [],
+            (css`
+                text {
+                    font-family: serif;
+                }
+                text.date,
+                text.string {
+                    font-size: 4px;
+                }
+                text.number {
+                    font-size: 6px;
+                }
+            `)
+        ];
         
         @state()
         declare private isLoading;
@@ -201,7 +204,8 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
             }
         }
 
-        override firstUpdated(): void {
+        override firstUpdated(changedProperties: PropertyValues): void {
+            super.firstUpdated(changedProperties);
             this.updateMeasurementLabels(AXIS.X);
             this.updateMeasurementLabels(AXIS.Y);
             setTimeout(() => {

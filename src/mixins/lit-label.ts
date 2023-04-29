@@ -11,13 +11,16 @@ export declare class LitLabelInterface {
 export const LitLabelMixin = <T extends Constructor<LitElement>>(superClass: T) => {
     class LitLabelClass extends superClass {
 
-        static styles = (css` 
-            #labels text.y {
-                transform-box: fill-box;
-	            transform: rotate(-90deg);
-	            transform-origin: center;
-            }
-        `);
+        static styles = [
+            (superClass as unknown as typeof LitElement).styles ?? [],
+            (css` 
+                #labels text.y {
+                    transform-box: fill-box;
+                    transform: rotate(-90deg);
+                    transform-origin: center;
+                }
+            `)
+        ];
 
         renderLabels(axisLabels: Axis<string, string>) {
             const { x, y } = axisLabels;
