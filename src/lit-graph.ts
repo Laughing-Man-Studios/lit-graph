@@ -49,8 +49,7 @@ export default class LitGraph extends Mixin {
     @property({ type: Array, attribute: 'data' })
     declare data: PlotData | null;
 
-  @property({ type: Array })
-  data: PlotData | null = null;
+    private svg = createRef<SVGSVGElement>();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor() {
@@ -143,8 +142,22 @@ export default class LitGraph extends Mixin {
       y: this.getSingleAxisDataStruct(axisTypes[AXIS.Y])
     };
 
-    return data.reduce(this.fillAxisData, axisData);
-  }
+        return data.reduce(this.fillGraphMeta, graphMeta);
+    }
+
+    override firstUpdated(changedProperties: PropertyValues): void {
+        super.firstUpdated(changedProperties);
+        const svg = this.svg.value;
+        if (svg) {
+            const box = svg.getBBox();
+            const xS = box && box.x || 0;
+            const yS = box && box.y || 0;
+            const xE = box && box.width || 100;
+            const yE = box && box.height || 100;
+
+            svg.setAttribute('viewBox', `${xS} ${yS} ${xE} ${yE}`);
+        }
+    }
 
   override render() {
     if (!this.data) {
@@ -154,7 +167,7 @@ export default class LitGraph extends Mixin {
 
 
     return html`
-      <svg viewBox="0 0 150 150">
+      <svg viewBox="0 0 150 150" ${ref(this.svg)}>
         ${this.renderGrid()}
         ${this.renderAxis(axisData)}
         ${this.renderLabels({ x: this.xLabel, y: this.yLabel })}
