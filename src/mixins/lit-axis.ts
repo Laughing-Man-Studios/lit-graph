@@ -160,7 +160,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                 return size + (isYAxis ? height : width); 
             }, 0);
 
-            return Math.max((END - totalLabelSize)/labelsArr.length, 0);
+            return Math.max((END - totalLabelSize)/(labelsArr.length - 1), 0);
         }
 
         private updateLabels(labelsArr: LabelsArr, END: number, isYAxis: boolean, spacing: number) {
@@ -168,15 +168,16 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
             let currentPos = 0;
             let labelEdge = 0;
 
-            labelsArr.forEach((el) => {
+            labelsArr.forEach((el, idx) => {
                 const { width, height } = el.getBBox();
+                const spacingSize = isYAxis && idx === 0 ? 0 : spacing;
                 const x = isYAxis ? -(width + SPACING_OFFSET.Y) : currentPos - (width/2);
-                const y = isYAxis ? currentPos + spacing + height : END + SPACING_OFFSET.X;
+                const y = isYAxis ? currentPos + spacingSize + height : END + SPACING_OFFSET.X;
 
                 el.setAttribute('x', x.toString());
                 el.setAttribute('y', y.toString());
 
-                currentPos += (isYAxis ? height : width) + spacing;
+                currentPos += (isYAxis ? height : width) + spacingSize;
 
                 if (isYAxis && labelEdge > x) {
                     labelEdge = x;
