@@ -19,3 +19,5 @@ export const GRAPH = {
         END: 150
     }
 };
+
+export const AXIS_LABEL_LIMIT = 10;

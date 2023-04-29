@@ -100,13 +100,13 @@ export default class LitGraph extends Mixin {
 
         data.begin = data.begin === 0 || data.begin > date ? date : data.begin;
         data.end = data.end === 0 || data.end < date ? date : data.end;
-        data.interval += 1;
-      }
-    } else if (typeof point === 'number' && !Array.isArray(data)) {
-      data.begin = data.begin === 0 || data.begin > point ? point : data.begin;
-      data.end = data.end === 0 || data.end < point ? point : data.end;
-      data.interval += 1;
-    }
+                data.interval = Math.ceil((data.end - data.begin) / AXIS_LABEL_LIMIT);
+            }
+        } else if (typeof axisPnt === 'number' && !Array.isArray(data)) {
+            data.begin = data.begin === 0 || data.begin > axisPnt ? axisPnt : data.begin;
+            data.end = data.end === 0 || data.end < axisPnt ? axisPnt : data.end;
+            data.interval = Math.ceil((data.end - data.begin) / AXIS_LABEL_LIMIT);
+        }
 
     return data;
   }
