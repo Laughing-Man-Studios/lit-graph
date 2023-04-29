@@ -32,29 +32,42 @@ export default class LitGraph extends Mixin {
     }
   `;
 
-  /**
-   * The X axis label
-   */
-  @property({ attribute: 'x-label'})
-  xLabel = '';
+    /**
+     * The X axis label
+     */
+    @property({ attribute: 'x-label' })
+    declare xLabel;
 
     /**
-   * The X axis label
-   */
-  @property({ attribute: 'y-label'})
-  yLabel = '';
+     * The X axis label
+     */
+    @property({ attribute: 'y-label' })
+    declare yLabel;
+    /**
+     * Data in JSON array format [{ x: <val>, y:<val> }, ...]
+     */
+    @property({ type: Array, attribute: 'data' })
+    declare data: PlotData | null;
 
   @property({ type: Array })
   data: PlotData | null = null;
 
-  getAxisType(singleAxisPoint: AxisType): AXIS_TYPE {
-    if (typeof singleAxisPoint  === 'string') {
-      if (isValidDate(singleAxisPoint)) {
-        return AXIS_TYPE.DATE;
-      } else {
-        return AXIS_TYPE.STRING;
-      }
-    } else if (typeof singleAxisPoint === 'number') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    constructor() {
+        super();
+        this.xLabel = '';
+        this.yLabel = '';
+        this.data = null;
+    }
+
+    private getAxisType(singleAxisPoint: AxisType): AXIS_TYPE {
+        if (typeof singleAxisPoint === 'string') {
+            if (isValidDate(singleAxisPoint)) {
+                return AXIS_TYPE.DATE;
+            } else {
+                return AXIS_TYPE.STRING;
+            }
+        } else if (typeof singleAxisPoint === 'number') {
       AXIS_TYPE.NUMBER;
     }
     throw new Error(`Point ${singleAxisPoint} has a bad data type`);
