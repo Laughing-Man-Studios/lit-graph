@@ -139,8 +139,8 @@ export default class LitGraph extends Mixin {
         return data.reduce(this.fillGraphMeta, graphMeta);
     }
 
-    override firstUpdated(changedProperties: PropertyValues): void {
-        super.firstUpdated(changedProperties);
+    override updated(changedProperties: PropertyValues): void {
+        super.updated(changedProperties);
         const svg = this.svg.value;
         if (svg) {
             const box = svg.getBBox();
@@ -164,7 +164,7 @@ export default class LitGraph extends Mixin {
       <svg viewBox="0 0 150 150" ${ref(this.svg)}>
         ${this.renderGrid()}
         ${this.renderAxis(graphMeta)}
-        ${this.renderLabels({ x: this.xLabel, y: this.yLabel })}
+        ${this.renderLabels({ x: this.xLabel, y: this.yLabel }, { x: this.xEdge, y: this.yEdge })}
         ${this.renderLinePlot(this.data, graphMeta)}
       </svg>
     `;

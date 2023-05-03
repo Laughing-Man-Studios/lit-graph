@@ -1,6 +1,6 @@
 import { LitElement, nothing, svg, css, TemplateResult, PropertyValues } from 'lit';
 import { GraphMeta, NUM_AXIS_TYPE, AxisMeta } from '../types';
-import { AXIS, AXIS_TYPE, GRAPH } from '../constants';
+import { AXIS, AXIS_TYPE, GRAPH, LINE_WIDTH } from '../constants';
 import { state } from 'lit/decorators.js';
 import { ref, createRef } from 'lit/directives/ref.js';
 
@@ -9,9 +9,17 @@ type Constructor<T = {}> = new (...args: any[]) => T;
 type LabelRenderer = (val: number) => string | TemplateResult;
 type LineElements = Array<TemplateResult>;
 type LabelsArr = SVGTextElement[];
+type UpdateLabelsArgs = { 
+    labelsArr: LabelsArr, 
+    END: number, 
+    isYAxis: boolean, 
+    spacing: number
+};
 
 export declare class LitAxisInterface {
     renderAxis(axisData?: GraphMeta): unknown;
+    xEdge: number;
+    yEdge: number;
 }
 
 const CONSTANTS = {
@@ -43,11 +51,23 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                 text.number {
                     font-size: 6px;
                 }
+                #xLabels line {
+                    stroke-width: ${LINE_WIDTH};
+                }
+                #yLabels line {
+                    stroke-width: ${LINE_WIDTH};
+                }
             `)
         ];
         
         @state()
-        declare private isLoading;
+        declare private isLoading: boolean;
+
+        @state()
+        declare xEdge: number;
+
+        @state()
+        declare yEdge: number;
 
         private labels = {
             [AXIS.X]: createRef(),
@@ -58,6 +78,8 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
         constructor(...args: any[]) {
             super(args);
             this.isLoading = true;
+            this.xEdge = 0;
+            this.yEdge = 0;
         }
 
         /* Generator Methods */
@@ -163,7 +185,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
             return Math.max((END - totalLabelSize)/(labelsArr.length - 1), 0);
         }
 
-        private updateLabels(labelsArr: LabelsArr, END: number, isYAxis: boolean, spacing: number) {
+        private updateLabels({ labelsArr, END, isYAxis, spacing }: UpdateLabelsArgs):number {
             const { SPACING_OFFSET } = CONSTANTS;
             let currentPos = 0;
             let labelEdge = 0;
@@ -172,45 +194,54 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(superClass: T) =
                 const { width, height } = el.getBBox();
                 const spacingSize = isYAxis && idx === 0 ? 0 : spacing;
                 const x = isYAxis ? -(width + SPACING_OFFSET.Y) : currentPos - (width/2);
-                const y = isYAxis ? currentPos + spacingSize + height : END + SPACING_OFFSET.X;
+                const y = isYAxis ? currentPos + spacingSize + height :
+                    END + SPACING_OFFSET.X + LINE_WIDTH;
 
                 el.setAttribute('x', x.toString());
                 el.setAttribute('y', y.toString());
 
                 currentPos += (isYAxis ? height : width) + spacingSize;
 
-                if (isYAxis && labelEdge > x) {
-                    labelEdge = x;
-                } else if (labelEdge < y) {
-                    labelEdge = y;
+                if (isYAxis && labelEdge > (x - width)) {
+                    labelEdge = (x - width);
+                } else if (labelEdge < (y + height)) {
+                    labelEdge = (y + height);
                 }
             });
+
+            return labelEdge;
         }
 
-        private updateMeasurementLabels(axis: AXIS): void {
+        private updateMeasurementLabels(axis: AXIS): number {
             const isYAxis = axis === AXIS.Y;
             const { END } = GRAPH[axis];
-            const labels = this.labels[axis].value?.querySelectorAll('text');
+            const axisElements = this.labels[axis].value;
             
-
-            if (labels?.[Symbol.iterator]) {
-                const labelsArr = Array.from(labels);
+            if (axisElements) {
+                const labelsArr = Array.from(axisElements.querySelectorAll('text'));
                 const spacing = this.getDimensionAttr(labelsArr, END, isYAxis);
-                
+
+                if (labelsArr.length < 1) {
+                    throw new Error('Missing axis elements for updating');
+                }
                 if(isYAxis) {
                     labelsArr.reverse();
                 }
 
-                this.updateLabels(labelsArr, END, isYAxis, spacing);
+                return this.updateLabels({ labelsArr, END, isYAxis, spacing });
             }
+
+            throw new Error('Couldnt find any axis elements to update');
         }
 
         override firstUpdated(changedProperties: PropertyValues): void {
             super.firstUpdated(changedProperties);
-            this.updateMeasurementLabels(AXIS.X);
-            this.updateMeasurementLabels(AXIS.Y);
+            const xEdge = this.updateMeasurementLabels(AXIS.X);
+            const yEdge = this.updateMeasurementLabels(AXIS.Y);
             setTimeout(() => {
                 this.isLoading = false;
+                this.xEdge = xEdge;
+                this.yEdge = yEdge;
             });
             
         }

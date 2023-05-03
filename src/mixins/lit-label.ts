@@ -3,9 +3,11 @@ import { Axis } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T = {}> = new (...args: any[]) => T;
+type LabelData = Axis<string, string>;
+type LabelMeta = Axis<number, number>;
 
 export declare class LitLabelInterface {
-    renderLabels(axisLabels: Axis<string, string>): unknown;
+    renderLabels(labels: LabelData, meta: LabelMeta): unknown;
 }
 
 export const LitLabelMixin = <T extends Constructor<LitElement>>(superClass: T) => {
@@ -14,22 +16,28 @@ export const LitLabelMixin = <T extends Constructor<LitElement>>(superClass: T) 
         static styles = [
             (superClass as unknown as typeof LitElement).styles ?? [],
             (css` 
-                #labels text.y {
+                #labels text {
                     transform-box: fill-box;
-                    transform: rotate(-90deg);
                     transform-origin: center;
+                }
+                #labels text.y {
+                    transform: translate(-57%, -50%) rotate(-90deg);
+                }
+                #labels text.x {
+                    transform: translate(-50%, 50%);
                 }
             `)
         ];
 
-        renderLabels(axisLabels: Axis<string, string>) {
-            const { x, y } = axisLabels;
+        renderLabels(labels: LabelData, meta: LabelMeta) {
+            const { x: xLabel, y:  yLabel } = labels;
+            const { x: xPos, y: yPos } = meta;
 
             return (svg`
                 <g id="labels">
-                    <text class="x" x="50%" y="100%">${x}</text>
-                    <text class="y" y="50%">${y}</text>
-                <g>
+                    <text class="x" x="50%" y="${xPos}">${xLabel}</text>
+                    <text class="y" y="50%" x="${yPos}">${yLabel}</text>
+                </g>
             `);
         }
     }

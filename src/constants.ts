@@ -21,3 +21,4 @@ export const GRAPH = {
 };
 
 export const AXIS_LABEL_LIMIT = 10;
+export const LINE_WIDTH=0.5;
