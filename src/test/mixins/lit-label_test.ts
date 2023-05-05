@@ -1,34 +1,31 @@
-import { assert, fixture } from '@open-wc/testing';
-import { html, LitElement } from 'lit';
-import { LitLabelMixin } from '../../mixins/lit-label';
+import {assert, fixture} from '@open-wc/testing';
+import {html, LitElement} from 'lit';
+import {LitLabelMixin} from '../../mixins/lit-label';
 
 const axisLabels = {
     x: 'Test1',
-    y: 'Test2'
+    y: 'Test2',
 };
 
 const meta = {
     x: 0,
-    y: 0
+    y: 0,
 };
 
 class Labels extends LitLabelMixin(LitElement) {
     override render() {
-        return (html`
-            <svg
-                height="300px"
-                width="300px"
-                viewbox="0 0 150 150">
-                    ${this.renderLabels(axisLabels, meta)}
+        return html`
+            <svg height="300px" width="300px" viewbox="0 0 150 150">
+                ${this.renderLabels(axisLabels, meta)}
             </svg>
-        `);
+        `;
     }
 }
 
 customElements.define('test-labels', Labels);
 
 suite('lit-label mixin', () => {
-    test('is defined', ()=> {
+    test('is defined', () => {
         const el = document.createElement('test-labels');
         assert.instanceOf(el, Labels);
         assert.exists((el as Labels).renderLabels);

@@ -1,6 +1,6 @@
-import { LitElement, svg } from 'lit';
-import { AXIS, GRAPH } from '../constants';
-import { Axis } from '../types';
+import {LitElement, svg} from 'lit';
+import {AXIS, GRAPH} from '../constants';
+import {Axis} from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T = {}> = new (...args: any[]) => T;
@@ -9,12 +9,13 @@ export declare class LitGridInterface {
     renderGrid(axisLengths?: Axis<number, number>): unknown;
 }
 
-export const LitGridMixin = <T extends Constructor<LitElement>>(superClass: T) => {
+export const LitGridMixin = <T extends Constructor<LitElement>>(
+    superClass: T
+) => {
     class LitGridClass extends superClass {
-
         private renderXAxisLines(xAxisSetLength: number) {
             const lineElements = [];
-            const { END, START } = GRAPH[AXIS.Y];
+            const {END, START} = GRAPH[AXIS.Y];
             const interval = END / xAxisSetLength;
             for (let i = 1; i < xAxisSetLength; i += 1) {
                 const xCoord = interval * i;
@@ -29,7 +30,7 @@ export const LitGridMixin = <T extends Constructor<LitElement>>(superClass: T) =
 
         private renderYAxisLines(yAxisSetLength: number) {
             const lineElements = [];
-            const { END, START } = GRAPH[AXIS.X];
+            const {END, START} = GRAPH[AXIS.X];
             const interval = END / yAxisSetLength;
             for (let i = 1; i < yAxisSetLength; i += 1) {
                 const yCoord = interval * i;
@@ -42,8 +43,8 @@ export const LitGridMixin = <T extends Constructor<LitElement>>(superClass: T) =
             return lineElements;
         }
 
-        renderGrid(axisLengths: Axis<number, number> = { x: 10, y: 10 }) {
-            const { x, y } = axisLengths;
+        renderGrid(axisLengths: Axis<number, number> = {x: 10, y: 10}) {
+            const {x, y} = axisLengths;
             return svg`
                 <g id="xGridLines">
                     ${this.renderXAxisLines(x)}
