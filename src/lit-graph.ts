@@ -116,7 +116,7 @@ export default class LitGraph extends Mixin {
                     data.begin === 0 || data.begin > date ? date : data.begin;
                 data.end = data.end === 0 || data.end < date ? date : data.end;
                 data.interval = Math.ceil(
-                    (data.end - data.begin) / AXIS_LABEL_LIMIT
+                    (data.end - data.begin) / AXIS_LABEL_LIMIT[AXIS_TYPE.DATE]
                 );
             }
         } else if (typeof axisPnt === 'number' && !Array.isArray(data)) {
@@ -125,7 +125,7 @@ export default class LitGraph extends Mixin {
             data.end =
                 data.end === 0 || data.end < axisPnt ? axisPnt : data.end;
             data.interval = Math.ceil(
-                (data.end - data.begin) / AXIS_LABEL_LIMIT
+                (data.end - data.begin) / AXIS_LABEL_LIMIT[AXIS_TYPE.NUMBER]
             );
         }
 
