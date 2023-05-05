@@ -3,52 +3,31 @@ import LitGraph from '../lit-graph';
 import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
 
+const ERRORS = {
+  NO_DATA: 'No data was passed to Lit-Graph'
+};
+
 suite('my-element', () => {
   test('is defined', () => {
-    const el = document.createElement('my-element');
+    const el = document.createElement('lit-graph');
     assert.instanceOf(el, LitGraph);
   });
 
-  test('renders with default values', async () => {
-    const el = await fixture(html`<my-element></my-element>`);
-    assert.shadowDom.equal(
-      el,
-      `
-      <h1>Hello, World!</h1>
-      <button part="button">Click Count: 0</button>
-      <slot></slot>
-    `
-    );
-  });
-
-  test('renders with a set name', async () => {
-    const el = await fixture(html`<my-element name="Test"></my-element>`);
-    assert.shadowDom.equal(
-      el,
-      `
-      <h1>Hello, Test!</h1>
-      <button part="button">Click Count: 0</button>
-      <slot></slot>
-    `
-    );
-  });
-
-  test('handles a click', async () => {
-    const el = (await fixture(html`<my-element></my-element>`)) as LitGraph;
-    const button = el.shadowRoot!.querySelector('button')!;
-    button.click();
-    await el.updateComplete;
-    assert.shadowDom.equal(
-      el,
-      `
-      <svg>
-        <lit-grid 
-    `
-    );
+  test('throws error when no properties are passed', async () => {
+    try {
+      await fixture(html`<lit-graph></lit-graph>`);
+    } catch(e) {
+      if (e instanceof Error) {
+        return assert.equal(e.message, ERRORS.NO_DATA, `Wrong Error was thrown: ${e.message}`);
+      } else {
+        return assert.fail('Did not catch an error in catch block');
+      }
+    }
+    return assert.fail('Did not throw an error');
   });
 
   test('styling applied', async () => {
-    const el = (await fixture(html`<my-element></my-element>`)) as LitGraph;
+    const el = (await fixture(html`<lit-graph></lit-graph>`)) as LitGraph;
     await el.updateComplete;
     assert.equal(getComputedStyle(el).paddingTop, '16px');
   });
