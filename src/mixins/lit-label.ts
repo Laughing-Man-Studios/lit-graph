@@ -22,7 +22,7 @@ export const LitLabelMixin = <T extends Constructor<LitElement>>(
                     transform-origin: center;
                 }
                 #labels text.y {
-                    transform: translate(-57%, -50%) rotate(-90deg);
+                    transform: translate(-60%, -50%) rotate(-90deg);
                 }
                 #labels text.x {
                     transform: translate(-50%, 50%);

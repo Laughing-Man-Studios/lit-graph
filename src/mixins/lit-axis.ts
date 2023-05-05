@@ -236,9 +236,9 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(
 
                 currentPos += (isYAxis ? height : width) + spacingSize;
 
-                if (isYAxis && labelEdge > x - width) {
-                    labelEdge = x - width;
-                } else if (labelEdge < y + height) {
+                if (isYAxis && labelEdge > x) {
+                    labelEdge = x;
+                } else if (!isYAxis && labelEdge < (y + height)) {
                     labelEdge = y + height;
                 }
             });
