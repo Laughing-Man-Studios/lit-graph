@@ -1,6 +1,5 @@
-import {assert, fixture} from '@open-wc/testing';
+import {assert, aTimeout, fixture} from '@open-wc/testing';
 import {html, LitElement} from 'lit';
-import {timeout} from '../helpers';
 import {AXIS_TYPE} from '../../constants';
 import {LitAxisMixin} from '../../mixins/lit-axis';
 import {AxisMeta} from '../../types';
@@ -107,7 +106,7 @@ suite('lit-axis mixin', () => {
         const el: LitElement = await fixture(
             html`<test-numbers></test-numbers>`
         );
-        await timeout(500);
+        await aTimeout(500);
         const xLabels = el.renderRoot.querySelectorAll('#xLabels text');
         const yLabels = el.renderRoot.querySelectorAll('#yLabels text');
         if (el) {
