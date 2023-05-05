@@ -7,6 +7,11 @@ const axisLabels = {
     y: 'Test2'
 };
 
+const meta = {
+    x: 0,
+    y: 0
+};
+
 class Labels extends LitLabelMixin(LitElement) {
     override render() {
         return (html`
@@ -14,7 +19,7 @@ class Labels extends LitLabelMixin(LitElement) {
                 height="300px"
                 width="300px"
                 viewbox="0 0 150 150">
-                    ${this.renderLabels(axisLabels)}
+                    ${this.renderLabels(axisLabels, meta)}
             </svg>
         `);
     }
