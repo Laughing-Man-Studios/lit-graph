@@ -21,6 +21,7 @@
         "test:watch": "wtr --watch",
         "test:prod": "cross-env MODE=prod wtr",
         "test:prod:watch": "cross-env MODE=prod wtr --watch",
+        "coverage": "wtr --coverage",
         "checksize": "rollup -c ; cat my-element.bundled.js | gzip -9 | wc -c ; rm my-element.bundled.js",
         "build:package": "tsc && packito",
         "precommit-msg": "echo 'Pre-commit checks...' && exit 0"
