@@ -67,22 +67,27 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(
             data: AxisMeta<AXIS_TYPE>,
             axis: AXIS
         ): number {
+            let massagedPlot = plot;
             if (Array.isArray(data)) {
-                if (typeof plot === 'string') {
-                    return this.generateStringAxisPosition(plot, data, axis);
+                if (typeof massagedPlot === 'string') {
+                    return this.generateStringAxisPosition(massagedPlot, data, axis);
                 }
                 throw new Error(
                     'Axis Data is of type string but plot is Number'
                 );
-            }
-
-            if (typeof plot !== 'number') {
+            } else if (data.type === AXIS_TYPE.DATE) {
+                if (typeof massagedPlot === 'string') {
+                    massagedPlot = Date.parse(massagedPlot);
+                } else {
+                    throw new Error('Axis Data is of type date but plot is Number');
+                }
+            } else if (data.type === AXIS_TYPE.NUMBER && typeof massagedPlot !== 'number') {
                 throw new Error(
                     'Axis Data is of type number but plot is String'
                 );
-            }
+            } 
 
-            return this.generateNumAxisPosition(plot, data, axis);
+            return this.generateNumAxisPosition(massagedPlot as number, data, axis);
         }
 
         private getElements(
