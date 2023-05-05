@@ -71,6 +71,6 @@ suite('lit-grid mixin', () => {
 
     test('renders with custom values', async () => {
         const el = await fixture(html`<test-el-two></test-el-two>`);
-        assert.shadowDom.equal(el, `<svg></svg>`);
+        assert.shadowDom.equal(el, '<svg></svg>');
     });
 });
