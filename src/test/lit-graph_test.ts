@@ -4,21 +4,34 @@ import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
 
 const ERRORS = {
-  NO_DATA: 'No data was passed to Lit-Graph'
+  NO_DATA: 'No data was passed to Lit-Graph',
 };
 
-suite('my-element', () => {
+const data = [
+  {x: 1, y: 1},
+  {x: 2, y: 2},
+];
+
+suite('lit-graph', () => {
   test('is defined', () => {
     const el = document.createElement('lit-graph');
     assert.instanceOf(el, LitGraph);
+    assert.exists(el.renderAxis, 'Couldnt find renderAxis mixin method');
+    assert.exists(el.renderGrid, 'Couldnt find renderGrid mixin method');
+    assert.exists(el.renderLabels, 'Couldnt find renderLabels mixin method');
+    assert.exists(
+      el.renderLinePlot,
+      'Couldnt find renderLinePlot mixin method'
+    );
   });
 
   test('throws error when no properties are passed', async () => {
     try {
       await fixture(html`<lit-graph></lit-graph>`);
-    } catch(e) {
+    } catch (e) {
       if (e instanceof Error) {
-        return assert.equal(e.message, ERRORS.NO_DATA, `Wrong Error was thrown: ${e.message}`);
+        const failMessage = `Wrong Error was thrown: ${e.message}`;
+        return assert.equal(e.message, ERRORS.NO_DATA, failMessage);
       } else {
         return assert.fail('Did not catch an error in catch block');
       }
@@ -26,9 +39,25 @@ suite('my-element', () => {
     return assert.fail('Did not throw an error');
   });
 
-  test('styling applied', async () => {
-    const el = (await fixture(html`<lit-graph></lit-graph>`)) as LitGraph;
-    await el.updateComplete;
-    assert.equal(getComputedStyle(el).paddingTop, '16px');
+  test('calls all mixin render functions', async () => {
+    const renderHTML = html`
+      <lit-graph x-label="Test" y-label="Test" .data="${data}"></lit-graph>
+    `;
+    const el = (await fixture(renderHTML)) as LitGraph;
+    const labels = el.renderRoot.querySelector('#labels');
+    const xGridLines = el.renderRoot.querySelector('#xGridLines');
+    const yGridLines = el.renderRoot.querySelector('#yGridLines');
+    const xLabels = el.renderRoot.querySelector('#xLabels');
+    const yLabels = el.renderRoot.querySelector('#yLabels');
+    const plotCircles = el.renderRoot.querySelector('#PlotCircles');
+    const plotLines = el.renderRoot.querySelector('#PlotLines');
+
+    assert.exists(labels, 'Couldnt find labels grouping');
+    assert.exists(xGridLines, 'Couldnt find X Grid Lines grouping');
+    assert.exists(yGridLines, 'Couldnt find Y Grid Lines grouping');
+    assert.exists(xLabels, 'Couldnt find X Labels grouping');
+    assert.exists(yLabels, 'Couldnt find Y Labels grouping');
+    assert.exists(plotCircles, 'Couldnt find Plot Circles grouping');
+    assert.exists(plotLines, 'Couldnt find Plot Lines grouping');
   });
 });
