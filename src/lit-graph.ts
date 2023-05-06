@@ -65,7 +65,7 @@ export default class LitGraph extends Mixin {
         } else if (typeof singleAxisPoint === 'number') {
             return AXIS_TYPE.NUMBER;
         }
-        throw new Error(`Point ${singleAxisPoint} has a bad data type`);
+        throw new Error(`Point ${JSON.stringify(singleAxisPoint)} has a bad data type`);
     }
 
     private checkDataIntegrity(
