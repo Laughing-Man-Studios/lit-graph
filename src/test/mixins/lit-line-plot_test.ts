@@ -1,8 +1,7 @@
 import {assert, fixture} from '@open-wc/testing';
 import {LitLinePlotMixin} from '../../mixins/lit-line-plot';
 import {html, LitElement} from 'lit';
-import {AxisData} from '../../types';
-import {AXIS_TYPE} from '../../constants';
+import {GraphMeta} from '../../types';
 
 class Numbers extends LitLinePlotMixin(LitElement) {
     private plot = [
@@ -21,7 +20,7 @@ class Numbers extends LitLinePlotMixin(LitElement) {
     private axisData = {
         x: {begin: 0, end: 9, interval: 1, type: 'number'},
         y: {begin: 0, end: 9, interval: 1, type: 'number'},
-    } as AxisData<AXIS_TYPE.NUMBER, AXIS_TYPE.NUMBER>;
+    } as GraphMeta;
 
     override render() {
         return html`
@@ -35,11 +34,11 @@ customElements.define('test-numbers', Numbers);
 
 class Dates extends LitLinePlotMixin(LitElement) {
     private plot = [
-        {x: 1618162213000, y: 1618162213000},
-        {x: 1649698213000, y: 1649698213000},
-        {x: 1681234213000, y: 1681234213000},
+        {x: '2021-04-11T17:30:13.000Z', y: '2021-04-11T17:30:13.000Z'},
+        {x: '2022-04-11T17:30:13.000Z', y: '2022-04-11T17:30:13.000Z'},
+        {x: '2023-04-11T17:30:13.000Z', y: '2023-04-11T17:30:13.000Z'},
     ];
-    private interval = (this.plot[0].x - this.plot[2].x) / 5;
+    private interval = (Date.parse(this.plot[0].x) - Date.parse(this.plot[2].x)) / 5;
     private axisData = {
         x: {
             begin: 1618162213000,
@@ -53,7 +52,7 @@ class Dates extends LitLinePlotMixin(LitElement) {
             interval: this.interval,
             type: 'date',
         },
-    } as AxisData<AXIS_TYPE.DATE, AXIS_TYPE.DATE>;
+    } as GraphMeta;
 
     override render() {
         return html`
