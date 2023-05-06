@@ -2,9 +2,10 @@ import {assert, fixture} from '@open-wc/testing';
 import {LitLinePlotMixin} from '../../mixins/lit-line-plot';
 import {html, LitElement} from 'lit';
 import {GraphMeta} from '../../types';
+import { assertError } from '../helpers';
 
 class Numbers extends LitLinePlotMixin(LitElement) {
-    private plot = [
+    plot = [
         {x: 0, y: 0},
         {x: 1, y: 1},
         {x: 2, y: 2},
@@ -17,7 +18,7 @@ class Numbers extends LitLinePlotMixin(LitElement) {
         {x: 9, y: 9},
     ];
 
-    private axisData = {
+    axisData = {
         x: {begin: 0, end: 9, interval: 1, type: 'number'},
         y: {begin: 0, end: 9, interval: 1, type: 'number'},
     } as GraphMeta;
@@ -64,6 +65,14 @@ class Dates extends LitLinePlotMixin(LitElement) {
 }
 customElements.define('test-dates', Dates);
 
+class Errors extends Numbers {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    override plot = [{ x: 'asdf', y: 'asdf' }];
+}
+
+customElements.define('test-errors', Errors);
+
 suite('lit-line-plot mixin', () => {
     test('is defined', () => {
         const el = document.createElement('test-numbers');
@@ -105,5 +114,11 @@ suite('lit-line-plot mixin', () => {
             2,
             'Expected number of line points to equal 2'
         );
+    });
+
+    test('throws correct error when mismatched meta and plot data are passed', async () => {
+        const promise = fixture(html`<test-errors></test-errors>`);
+
+        return await assertError(promise, 'Axis Data is of type number but plot is String');
     });
 });
