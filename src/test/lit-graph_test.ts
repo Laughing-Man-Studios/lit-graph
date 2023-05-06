@@ -3,6 +3,7 @@ import LitGraph from '../lit-graph';
 import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
 import { TemplateResult } from 'lit';
+import { assertError } from './helpers';
 
 const ERRORS = {
     NO_DATA: 'No data was passed to Lit-Graph',
@@ -36,20 +37,6 @@ const TEST_DATA = {
         { x: 'two', y: 'two' }
     ]
 };
-
-async function assertError(promise: Promise<Element>, error: string) {
-    try {
-        await promise;
-    } catch (e) {
-        if (e instanceof Error) {
-            const failMessage = `Wrong Error was thrown: ${e.message}`;
-            return assert.equal(e.message, error, failMessage);
-        } else {
-            return assert.fail('Did not catch an error in catch block');
-        }
-    }
-    return assert.fail('Did not throw an error');
-}
 
 async function assertRender(renderHTML: TemplateResult) {
     const el = (await fixture(renderHTML)) as LitGraph;
