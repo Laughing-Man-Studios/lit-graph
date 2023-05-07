@@ -65,13 +65,61 @@ class Dates extends LitLinePlotMixin(LitElement) {
 }
 customElements.define('test-dates', Dates);
 
-class Errors extends Numbers {
+class ErrorsString extends Numbers {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     override plot = [{ x: 'asdf', y: 'asdf' }];
 }
 
-customElements.define('test-errors', Errors);
+customElements.define('test-errors-string', ErrorsString);
+
+class ErrorsNumbers extends Numbers {
+
+    override axisData = {
+        x: ['one', 'two', 'three'],
+        y: ['one', 'two', 'three'],
+    } as GraphMeta;
+}
+
+customElements.define('test-errors-numbers', ErrorsNumbers);
+
+class ErrorsDates extends Numbers {
+
+    override axisData = {
+        x: {
+            begin: 1618162213000,
+            end: 1681234213000,
+            interval: 3,
+            type: 'date',
+        },
+        y: {
+            begin: 1618162213000,
+            end: 1681234213000,
+            interval: 3,
+            type: 'date',
+        },
+    } as GraphMeta;
+}
+
+customElements.define('test-errors-dates', ErrorsDates);
+
+class ErrorsStringMismatch extends Numbers {
+
+    override axisData = {
+        x: ['one', 'two', 'three'],
+        y: ['one', 'two', 'three'],
+    } as GraphMeta;
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    override plot = [
+        { x: 'four', y: 'four'},
+        { x: 'four', y: 'four'},
+        { x: 'four', y: 'four'}
+    ];
+}
+
+customElements.define('test-errors-string-mismatch', ErrorsStringMismatch);
 
 suite('lit-line-plot mixin', () => {
     test('is defined', () => {
@@ -116,9 +164,27 @@ suite('lit-line-plot mixin', () => {
         );
     });
 
-    test('throws correct error when mismatched meta and plot data are passed', async () => {
-        const promise = fixture(html`<test-errors></test-errors>`);
+    test('throws correct error when number meta and string plot data are passed', async () => {
+        const promise = fixture(html`<test-errors-string></test-errors-string>`);
 
         return await assertError(promise, 'Axis Data is of type number but plot is String');
+    });
+
+    test('throws correct error when string meta and number plot data are passed', async () => {
+        const promise = fixture(html`<test-errors-numbers></test-errors-numbers>`);
+
+        return await assertError(promise, 'Axis Data is of type string but plot is Number');
+    });
+
+    test('throws correct error when date meta and number plot data are passed', async () => {
+        const promise = fixture(html`<test-errors-dates></test-errors-dates>`);
+
+        return await assertError(promise, 'Axis Data is of type date but plot is Number');
+    });
+
+    test('throws correct error when string meta and string plot data dont match', async () => {
+        const promise = fixture(html`<test-errors-string-mismatch></test-errors-string-mismatch>`);
+
+        return await assertError(promise, 'String Plot doesnt exist in axis data');
     });
 });

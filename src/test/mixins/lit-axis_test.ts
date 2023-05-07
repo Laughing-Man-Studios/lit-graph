@@ -4,6 +4,7 @@ import {AXIS_TYPE} from '../../constants';
 import {LitAxisMixin} from '../../mixins/lit-axis';
 import {AxisMeta} from '../../types';
 import {ref, createRef} from 'lit/directives/ref.js';
+import { assertError } from '../helpers';
 
 const expects = {
     default: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -55,6 +56,17 @@ class Numbers extends LitAxisMixin(LitElement) {
     }
 }
 customElements.define('test-numbers', Numbers);
+
+class Errors extends LitAxisMixin(LitElement) {
+    override render() {
+        return html`
+            <svg height="300" width="300" viewBox="-5 0 150 155">
+                ${this.renderAxis({ x: [], y: []})}
+            </svg>
+        `;
+    }
+}
+customElements.define('test-errors', Errors);
 
 class Dates extends LitAxisMixin(LitElement) {
     private svg = createRef<SVGSVGElement>();
@@ -143,5 +155,11 @@ suite('lit-axis mixin', () => {
         } else {
             assert.fail('Component did not render');
         }
+    });
+
+    test('throws correct error when no axis data passed', async () => {
+        const promise = fixture(html`<test-errors></test-errors>`);
+
+        return await assertError(promise, 'Missing axis elements for updating');
     });
 });
