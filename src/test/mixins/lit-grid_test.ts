@@ -1,26 +1,26 @@
-import { assert, fixture } from '@open-wc/testing';
-import { html, LitElement } from 'lit';
-import { LitGridMixin } from '../../mixins/lit-grid';
+import {assert, fixture} from '@open-wc/testing';
+import {html, LitElement} from 'lit';
+import {LitGridMixin} from '../../mixins/lit-grid';
 
 class TestEl extends LitGridMixin(LitElement) {
-    override render () {
+    override render() {
         return html`<svg>${this.renderGrid()}</svg>`;
     }
 }
 customElements.define('test-el', TestEl);
 
 class TestEl2 extends LitGridMixin(LitElement) {
-    override render () {
-        return html`<svg>${this.renderGrid({ x: 3, y: 3})}</svg>`;
+    override render() {
+        return html`<svg>${this.renderGrid({x: 3, y: 3})}</svg>`;
     }
 }
 customElements.define('test-el-two', TestEl2);
 
-suite('lit-grid mixin', ()=> {
+suite('lit-grid mixin', () => {
     test('is defined', () => {
         const el = document.createElement('test-el');
         assert.instanceOf(el, TestEl);
-        assert.exists((el as TestEl).renderGrid);     
+        assert.exists((el as TestEl).renderGrid);
     });
 
     test('renders with default values', async () => {
@@ -71,9 +71,6 @@ suite('lit-grid mixin', ()=> {
 
     test('renders with custom values', async () => {
         const el = await fixture(html`<test-el-two></test-el-two>`);
-        assert.shadowDom.equal(
-            el,
-            `<svg></svg>`
-        );
+        assert.shadowDom.equal(el, '<svg></svg>');
     });
 });

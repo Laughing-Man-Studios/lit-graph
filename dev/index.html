@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>&lt;my-element> Demo</title>
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-    <script src="../node_modules/lit/polyfill-support.js"></script>
-    <script type="module" src="../dist/lit-graph.js"></script>
-    <style>
-      p {
-        border: solid 1px blue;
-        padding: 8px;
-      }
-    </style>
-  </head>
-  <body>
-    <my-element>
-      <p>This is child content</p>
-    </my-element>
-  </body>
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8" />
+        <title>Lit Graph Demo</title>
+        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+        <script src="../node_modules/lit/polyfill-support.js"></script>
+        <script type="module" src="../src/lit-graph.ts"></script>
+    </head>
+    <body>
+        <h1>Lit Graph Demo</h1>
+        <lit-graph
+            style="height: 300px; width: 300px; display: block"
+            x-label="X Label Test"
+            y-label="Y Label Test"
+            data='[{"x":1,"y":1},{"x":2,"y":2},{"x":3,"y":3},{"x":4,"y":4},{"x":5,"y":5}]'
+        ></lit-graph>
+        <lit-graph
+            style="height: 300px; width: 300px; display: block"
+            x-label="X Label Test"
+            y-label="Y Label Test"
+            data='[{"x":"2023-05-05T12:02:27.034Z","y":"2023-05-05T12:02:27.034Z"},{"x":"2023-06-05T12:02:27.034Z","y":"2023-06-05T12:02:27.034Z"},{ "x":"2023-07-05T12:02:27.034Z","y":"2023-07-05T12:02:27.034Z"}]'
+        ></lit-graph>
+    </body>
 </html>
