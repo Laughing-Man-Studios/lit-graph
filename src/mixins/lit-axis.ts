@@ -238,7 +238,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(
 
                 if (isYAxis && labelEdge > x) {
                     labelEdge = x;
-                } else if (!isYAxis && labelEdge < (y + height)) {
+                } else if (!isYAxis && labelEdge < y + height) {
                     labelEdge = y + height;
                 }
             });
@@ -251,9 +251,7 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(
             const {END} = GRAPH[axis];
             const axisElements = this.labels[axis].value as Element;
 
-            const labelsArr = Array.from(
-                axisElements.querySelectorAll('text')
-            );
+            const labelsArr = Array.from(axisElements.querySelectorAll('text'));
             const spacing = this.getDimensionAttr(labelsArr, END, isYAxis);
 
             if (labelsArr.length < 1) {

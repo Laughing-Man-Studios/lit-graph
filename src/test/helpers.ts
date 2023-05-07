@@ -1,5 +1,5 @@
 /* c8 ignore next 16 */
-import { assert } from '@open-wc/testing';
+import {assert} from '@open-wc/testing';
 
 export async function assertError(promise: Promise<Element>, error: string) {
     try {

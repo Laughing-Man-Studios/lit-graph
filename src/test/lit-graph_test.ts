@@ -2,40 +2,40 @@ import LitGraph from '../lit-graph';
 
 import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
-import { TemplateResult } from 'lit';
-import { assertError } from './helpers';
+import {TemplateResult} from 'lit';
+import {assertError} from './helpers';
 
 const ERRORS = {
     NO_DATA: 'No data was passed to Lit-Graph',
     BAD_DATA: 'Point {} has a bad data type',
     MISMATCH_DATA: 'Data contains mismatching types',
-    BAD_ARGS: 'AxisType something is not a valid AxisType'
+    BAD_ARGS: 'AxisType something is not a valid AxisType',
 };
 
 const TEST_DATA = {
     NUMBERS: [
         {x: 1, y: 1},
-        {x : 2, y: 2},
+        {x: 2, y: 2},
     ],
     DATES: [
-        { x: '2023-05-05T12:02:27.034Z', y: '2023-05-05T12:02:27.034Z' },
-        { x: '2023-06-05T12:02:27.034Z', y: '2023-06-05T12:02:27.034Z' },
-        { x: '2023-07-05T12:02:27.034Z', y: '2023-07-05T12:02:27.034Z' }
+        {x: '2023-05-05T12:02:27.034Z', y: '2023-05-05T12:02:27.034Z'},
+        {x: '2023-06-05T12:02:27.034Z', y: '2023-06-05T12:02:27.034Z'},
+        {x: '2023-07-05T12:02:27.034Z', y: '2023-07-05T12:02:27.034Z'},
     ],
     STRING: [
-        { x: 'ONE', y: 1 },
-        { x: 'TWO', y: 2 },
-        { x: 'THREE', y: 3 },
+        {x: 'ONE', y: 1},
+        {x: 'TWO', y: 2},
+        {x: 'THREE', y: 3},
     ],
     BAD: [
-        { x: {}, y: {} },
-        { x: {}, y: {} },
-        { x: {}, y: {} },
+        {x: {}, y: {}},
+        {x: {}, y: {}},
+        {x: {}, y: {}},
     ],
     MISMATCH: [
-        { x: 1, y: 1 },
-        { x: 'two', y: 'two' }
-    ]
+        {x: 1, y: 1},
+        {x: 'two', y: 'two'},
+    ],
 };
 
 async function assertRender(renderHTML: TemplateResult) {
@@ -73,7 +73,7 @@ suite('lit-graph', () => {
         );
     });
 
-    test('throws correct error when no properties are passed', async () =>{
+    test('throws correct error when no properties are passed', async () => {
         const promise = fixture(html`<lit-graph></lit-graph>`);
         return await assertError(promise, ERRORS.NO_DATA);
     });
@@ -114,10 +114,9 @@ suite('lit-graph', () => {
         assertRender(renderHTML);
     });
 
-    
     test('throws correct error when bad data is passed', async () => {
         const renderHTML = html`
-             <!-- @ts-ignore -->
+            <!-- @ts-ignore -->
             <lit-graph
                 x-label="Test"
                 y-label="Test"
@@ -125,13 +124,12 @@ suite('lit-graph', () => {
             ></lit-graph>
         `;
         const promise = fixture(renderHTML);
-        
+
         return await assertError(promise, ERRORS.BAD_DATA);
     });
 
     test('throws correct error when mismatched data is passed', async () => {
         const renderHTML = html`
-        
             <lit-graph
                 x-label="Test"
                 y-label="Test"
@@ -139,7 +137,7 @@ suite('lit-graph', () => {
             ></lit-graph>
         `;
         const promise = fixture(renderHTML);
-        
+
         return await assertError(promise, ERRORS.MISMATCH_DATA);
     });
 
@@ -152,12 +150,13 @@ suite('lit-graph', () => {
             ></lit-graph>
         `;
         const el: LitGraph = await fixture(renderHTML);
-        const promise = new Promise<Element>(() => { 
+        const promise = new Promise<Element>(() => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            el['getSingleAxisDataStruct']('something'); return el; 
+            el['getSingleAxisDataStruct']('something');
+            return el;
         });
-        
+
         return await assertError(promise, ERRORS.BAD_ARGS);
     });
 });

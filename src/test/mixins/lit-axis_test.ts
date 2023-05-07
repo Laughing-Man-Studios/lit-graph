@@ -4,7 +4,7 @@ import {AXIS_TYPE} from '../../constants';
 import {LitAxisMixin} from '../../mixins/lit-axis';
 import {AxisMeta} from '../../types';
 import {ref, createRef} from 'lit/directives/ref.js';
-import { assertError } from '../helpers';
+import {assertError} from '../helpers';
 
 const expects = {
     default: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -61,7 +61,7 @@ class Errors extends LitAxisMixin(LitElement) {
     override render() {
         return html`
             <svg height="300" width="300" viewBox="-5 0 150 155">
-                ${this.renderAxis({ x: [], y: []})}
+                ${this.renderAxis({x: [], y: []})}
             </svg>
         `;
     }

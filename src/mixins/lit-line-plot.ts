@@ -70,7 +70,11 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(
             let massagedPlot = plot;
             if (Array.isArray(data)) {
                 if (typeof massagedPlot === 'string') {
-                    return this.generateStringAxisPosition(massagedPlot, data, axis);
+                    return this.generateStringAxisPosition(
+                        massagedPlot,
+                        data,
+                        axis
+                    );
                 }
                 throw new Error(
                     'Axis Data is of type string but plot is Number'
@@ -79,15 +83,24 @@ export const LitLinePlotMixin = <T extends Constructor<LitElement>>(
                 if (typeof massagedPlot === 'string') {
                     massagedPlot = Date.parse(massagedPlot);
                 } else {
-                    throw new Error('Axis Data is of type date but plot is Number');
+                    throw new Error(
+                        'Axis Data is of type date but plot is Number'
+                    );
                 }
-            } else if (data.type === AXIS_TYPE.NUMBER && typeof massagedPlot !== 'number') {
+            } else if (
+                data.type === AXIS_TYPE.NUMBER &&
+                typeof massagedPlot !== 'number'
+            ) {
                 throw new Error(
                     'Axis Data is of type number but plot is String'
                 );
-            } 
+            }
 
-            return this.generateNumAxisPosition(massagedPlot as number, data, axis);
+            return this.generateNumAxisPosition(
+                massagedPlot as number,
+                data,
+                axis
+            );
         }
 
         private getElements(

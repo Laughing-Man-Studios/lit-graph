@@ -20,5 +20,5 @@ export const GRAPH = {
     },
 };
 
-export const AXIS_LABEL_LIMIT = { [AXIS_TYPE.NUMBER]: 10, [AXIS_TYPE.DATE]: 8 };
+export const AXIS_LABEL_LIMIT = {[AXIS_TYPE.NUMBER]: 10, [AXIS_TYPE.DATE]: 8};
 export const LINE_WIDTH = 0.5;
