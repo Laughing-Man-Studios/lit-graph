@@ -249,25 +249,21 @@ export const LitAxisMixin = <T extends Constructor<LitElement>>(
         private updateMeasurementLabels(axis: AXIS): number {
             const isYAxis = axis === AXIS.Y;
             const {END} = GRAPH[axis];
-            const axisElements = this.labels[axis].value;
+            const axisElements = this.labels[axis].value as Element;
 
-            if (axisElements) {
-                const labelsArr = Array.from(
-                    axisElements.querySelectorAll('text')
-                );
-                const spacing = this.getDimensionAttr(labelsArr, END, isYAxis);
+            const labelsArr = Array.from(
+                axisElements.querySelectorAll('text')
+            );
+            const spacing = this.getDimensionAttr(labelsArr, END, isYAxis);
 
-                if (labelsArr.length < 1) {
-                    throw new Error('Missing axis elements for updating');
-                }
-                if (isYAxis) {
-                    labelsArr.reverse();
-                }
-
-                return this.updateLabels({labelsArr, END, isYAxis, spacing});
+            if (labelsArr.length < 1) {
+                throw new Error('Missing axis elements for updating');
+            }
+            if (isYAxis) {
+                labelsArr.reverse();
             }
 
-            throw new Error('Couldnt find any axis elements to update');
+            return this.updateLabels({labelsArr, END, isYAxis, spacing});
         }
 
         override firstUpdated(changedProperties: PropertyValues): void {
