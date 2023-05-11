@@ -1,4 +1,4 @@
-import {LitElement, html, PropertyValues} from 'lit';
+import {LitElement, html, PropertyValues, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {ref, createRef} from 'lit/directives/ref.js';
 import {AXIS, AXIS_LABEL_LIMIT, AXIS_TYPE} from './constants';
@@ -24,10 +24,18 @@ type PlotPnt = Axis<AxisType, AxisType>;
  * @data - The data that needs to be graphed. Can take in strings, numbers, or dates
  * @x-label - Main label for the X axis
  * @y-label - Main label for the Y axis
- * @csspart button - The button
  */
 @customElement('lit-graph')
 export default class LitGraph extends Mixin {
+
+    static override styles = [
+        Mixin.styles || [],
+        css`
+            svg {
+                height: var(--svg-height, 300px);
+                width: var(--svg-width, 300px)
+            }
+    `];
     /**
      * The X axis label
      */

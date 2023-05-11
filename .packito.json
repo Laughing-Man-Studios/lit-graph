@@ -2,7 +2,6 @@
     "remove": {
         "devDependencies": "*",
         "scripts": "*",
-        "type": true,
         "esm": true,
         "husky": true,
         "commitlint": true
